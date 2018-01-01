@@ -4,6 +4,7 @@ this is a mini memory cache
 ## usage
 ```
 make server
+./server
 ```
 
 ### set 
