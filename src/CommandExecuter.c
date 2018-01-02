@@ -50,6 +50,23 @@ int setValue(CommandExecuter * executer) {
 	return SUCCESS;
 }
 
+int delValue(CommandExecuter * executer) {
+	HashTable * dataStorage = executer->dataStorage;
+	if (executer->parser->paramsSize != 1) {
+		executer->exception->ExcepType = 2;
+		strcpy(executer->exception->message, "The del command params len must be 1\n");
+		Throw(executer->exception);
+	}
+	
+	int ret = hash_remove(dataStorage, executer->parser->params[0]);
+	if (ret == FAILED) {
+		return FAILED;
+	}
+	
+	executer->result->flag = SUCCESS;
+	return SUCCESS;
+}
+
 int getValue(CommandExecuter * executer) {
 	HashTable * dataStorage = executer->dataStorage;
 	if (executer->parser->paramsSize != 1) {
@@ -91,6 +108,11 @@ int initCommandHandlerMap() {
 	}
 
 	ret = hash_insert(commandHandlerMap, "get", (void *)getValue);
+	if (ret == FAILED) {
+		return FAILED;
+	}
+
+	ret = hash_insert(commandHandlerMap, "del", (void *)delValue);
 	if (ret == FAILED) {
 		return FAILED;
 	}
