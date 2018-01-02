@@ -7,6 +7,7 @@ typedef struct _linkNode {
 
 typedef struct _link {
 	LinkNode * head;
+	int size;
 	int (* append)(struct _link *, LinkNode *);
 	void (* traversal)(struct _link *);
 } Link;

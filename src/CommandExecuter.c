@@ -7,6 +7,7 @@
 #include "HashTable.h"
 #include "common.h"
 #include "Exception.h"
+#include "Link.h"
 
 HashTable * commandHandlerMap;
 void commandExecuterRun(CommandExecuter * executer) {
@@ -87,6 +88,117 @@ int getValue(CommandExecuter * executer) {
 	return SUCCESS;
 }
 
+int listPushValue(CommandExecuter * executer) {
+	HashTable * dataStorage = executer->dataStorage;
+	if (executer->parser->paramsSize != 2) {
+		executer->exception->ExcepType = 2;
+		strcpy(executer->exception->message, "The lpush command params len must be 2\n");
+		Throw(executer->exception);
+	}
+
+	int ret = hash_append(dataStorage, executer->parser->params[0], (void *)executer->parser->params[1]);
+	if (ret == FAILED) {
+		return FAILED;
+	}
+
+	executer->result->flag = SUCCESS;
+	return SUCCESS;
+}
+
+int listLen(CommandExecuter * executer) {
+	HashTable * dataStorage = executer->dataStorage;
+	if (executer->parser->paramsSize != 1) {
+		executer->exception->ExcepType = 2;
+		strcpy(executer->exception->message, "The llen command params len must be 1\n");
+		Throw(executer->exception);
+	}
+
+	Link * values;
+	int ret = hash_lookup(dataStorage, executer->parser->params[0], (void **)&values);
+	if (ret == FAILED) {
+		return FAILED;
+	}
+
+	executer->result->ret = (char *)malloc(sizeof(char));
+	sprintf(executer->result->ret, "%d", values->size);
+	return SUCCESS;
+}
+
+int listRangeValue(CommandExecuter * executer) {
+	HashTable * dataStorage = executer->dataStorage;
+	if (executer->parser->paramsSize != 3) {
+		executer->exception->ExcepType = 2;
+		strcpy(executer->exception->message, "The lrange command params len must be 3\n");
+		Throw(executer->exception);
+	}
+
+	int min = atoi(executer->parser->params[1]);
+	int max = atoi(executer->parser->params[2]);
+	if (min > max) {
+		executer->exception->ExcepType = 2;
+		strcpy(executer->exception->message, "lrange key min max; min should not bigger than max\n");
+		Throw(executer->exception);
+	}
+
+	Link * values;
+	int ret = hash_lookup(dataStorage, executer->parser->params[0], (void **)&values);
+	if (ret == FAILED) {
+		return FAILED;
+	}
+
+	
+	executer->result->ret = (char *)malloc(sizeof(char));
+	LinkNode * current = values->head;
+	
+	int index = 0;
+	char * tmp;
+	while(current) {
+		if (index < min) {
+			continue;
+		}
+
+		if (index > max) {
+			break;
+		}
+
+		tmp = (char *)current->data;
+		sprintf(tmp, "%s,", tmp);
+		strcat(executer->result->ret, tmp);
+		index++;
+		current = current->next;
+	}
+
+	return SUCCESS;
+}
+
+int listValue(CommandExecuter * executer) {
+	HashTable * dataStorage = executer->dataStorage;
+	if (executer->parser->paramsSize != 1) {
+		executer->exception->ExcepType = 2;
+		strcpy(executer->exception->message, "The list command params len must be 1\n");
+		Throw(executer->exception);
+	}
+
+	Link * values;
+	int ret = hash_lookup(dataStorage, executer->parser->params[0], (void **)&values);
+	if (ret == FAILED) {
+		return FAILED;
+	}
+
+	executer->result->ret = (char *)malloc(sizeof(char));
+	LinkNode * current = values->head;
+	
+	char * tmp;
+	while(current) {
+		tmp = (char *)current->data;
+		sprintf(tmp, "%s,", tmp);
+		strcat(executer->result->ret, tmp);
+		current = current->next;
+	}
+
+	return SUCCESS;
+}
+
 int initCommandHandlerMap() {
 	if (NULL != commandHandlerMap) {
 		return SUCCESS;
@@ -113,6 +225,26 @@ int initCommandHandlerMap() {
 	}
 
 	ret = hash_insert(commandHandlerMap, "del", (void *)delValue);
+	if (ret == FAILED) {
+		return FAILED;
+	}
+
+	ret = hash_insert(commandHandlerMap, "lpush", (void *)listPushValue);
+	if (ret == FAILED) {
+		return FAILED;
+	}
+
+	ret = hash_insert(commandHandlerMap, "llen", (void *)listLen);
+	if (ret == FAILED) {
+		return FAILED;
+	}
+
+	ret = hash_insert(commandHandlerMap, "lrange", (void *)listRangeValue);
+	if (ret == FAILED) {
+		return FAILED;
+	}
+
+	ret = hash_insert(commandHandlerMap, "list", (void *)listValue);
 	if (ret == FAILED) {
 		return FAILED;
 	}

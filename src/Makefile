@@ -39,5 +39,5 @@ event_test_debug:event_test.debug HashTable.debug Link.debug Event.debug
 -include $(D_FILE_LIST)
 
 clean:
-	rm *.d *.o *.pthread *.i *.out *.debug *test *debug
+	rm *.d *.o *.pthread *.i *.out *.debug *test *debug $(APPLICATION)
 	rm -rf $(COMPILED)/*
