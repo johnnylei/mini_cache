@@ -15,7 +15,7 @@ int main() {
 	Event * event = initEvent();
 	event->on(event, "print_str", print_str);
 	event->on(event, "print_str", print_str_1);
-	event->off(event, "print_str");
+ 	event->off(event, "print_str");
 	char str[] = "hello fucker";
 	event->trigger(event, "print_str", str);
 }

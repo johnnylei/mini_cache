@@ -46,8 +46,7 @@ void * accept_client(void * context) {
 }
 
 int main() {
-	HashTable * dataStorage = (HashTable *)malloc(sizeof(HashTable));
-	hash_init_with_size(dataStorage, DATA_STORAGE_INIT_SIZE);
+	HashTable * dataStorage = initHashWithSize(DATA_STORAGE_INIT_SIZE);
 	struct sockaddr_in server_address;
 	server_address.sin_port = ntohs(12345);
 	server_address.sin_family = AF_INET;
@@ -98,6 +97,7 @@ int main() {
 				}
 
 				send_buff = server->run(server);
+				server->destroy(server);
 				send(client_fd, send_buff, strlen(send_buff), 0);
 			}
 		}

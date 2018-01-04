@@ -8,6 +8,7 @@ typedef struct _event {
 	void * (* trigger)(struct _event *, const char *, void *);
 	void * (* off)(struct _event *, const char *);
 	void * (* on)(struct _event *, const char *, void * (* handler)(void *));
+	void (* destroy)(void *);
 } Event;
 
 Event * initEvent();

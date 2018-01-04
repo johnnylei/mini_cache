@@ -5,10 +5,11 @@
 #include "CommandParser.h"
 #include "Server.h"
 #include "Event.h"
-typedef union _result {
+typedef struct _commandExecuterresult {
 	int flag;
 	char * ret;
-} Result;
+	void (* destroy)(void *);
+} CommandExecuterResult;
 
 typedef struct _commandExecuter {
 	ExcepSign * exception;
@@ -16,9 +17,11 @@ typedef struct _commandExecuter {
 	HashTable * commandHandlerMap;
 	CommandParser * parser;
 	Event * event;
-	Result * result;
+	CommandExecuterResult * result;
 	void (* run)(struct _commandExecuter *);
+	void (* destroy)(void *);
 } CommandExecuter;
 
 CommandExecuter * initCommandExecuter(Server *server, CommandParser * parser);
+CommandExecuterResult * initCommandExecuterResult();
 #endif

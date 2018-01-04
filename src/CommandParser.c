@@ -43,15 +43,33 @@ void commandParserRun(CommandParser * parser) {
 	parser->event->trigger(parser->event, AfterRun, (void *)parser);
 }
 
+void commandParserDestroy(void * object) {
+	CommandParser * parser = (CommandParser *)object;
+	parser->event->destroy(parser->event);
+	free(parser->recv);
+
+//	for(int i = 0; i < parser->paramsSize; i++) {
+//		free(parser->params[i]);
+//	}
+
+	free(parser->params);
+	free(parser);
+}
+
 CommandParser * initCommandParser(Server * server) {
 	CommandParser * parser = (CommandParser *)malloc(sizeof(CommandParser));
-	parser->recv = server->recv;
 	parser->recvSize = server->recvSize;
+
+	parser->recv = (char *)malloc(parser->recvSize * sizeof(char));
+	memset(parser->recv, '\0', parser->recvSize);
+	strcpy(parser->recv, server->recv);
+
 	parser->command = NULL;
 	parser->params = (char **)calloc(INIT_PARAMS_SIZE, sizeof(char *));
 	parser->paramsSize = INIT_PARAMS_SIZE;
 	parser->run = commandParserRun;
 	parser->exception = server->exception;
 	parser->event = initEvent();
+	parser->destroy = commandParserDestroy;
 	return parser;
 }

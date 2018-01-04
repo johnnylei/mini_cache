@@ -15,6 +15,9 @@
 typedef struct _Bucket {
     char * key;
     void * value;
+	unsigned long valueSize;
+	void (* destroy)(void *);
+	void (* destroyValue)(void *);
     struct _Bucket * next;
 } Bucket;
 
@@ -22,14 +25,14 @@ typedef struct _HashTable {
     int size;
     int element_num;
     Bucket ** buckets;
+	int (* insert)(struct _HashTable *, Bucket *);
+	int (* remove)(struct _HashTable *, const char *);
+	void (* destroy)(void *);
+	int (* lookup)(struct _HashTable *, const char *, void **);
 } HashTable;
 
-int hash_init(HashTable *ht);
-int hash_init_with_size(HashTable *ht, int size);
-int hash_lookup(HashTable *ht,const char *key, void **result);
-int hash_insert(HashTable *ht,const char *key, void *value);
-int hash_append(HashTable *ht,const char *key, void *value);
-int hash_remove(HashTable *ht,const char *key);
-int hash_destroy(HashTable *ht);
+Bucket * initBucket(const char *key, void *value, void (* destroyValue)(void *));
+HashTable * initHash();
+HashTable * initHashWithSize(int size);
 
 #endif

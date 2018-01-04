@@ -16,9 +16,14 @@ int main() {
 	link->traversal = printfIntLink;
 	int len = sizeof(arr) / sizeof(int);
 	for (int i = 0; i < len; i++) {
-		LinkNode * node = initLinkNode((void *)&arr[i]);
+		LinkNode * node = initLinkNode((void *)&arr[i], NULL);
 		link->append(link, node);
 	}
 
+	link->traversal(link);
+	link->del(link, 1);
+	link->del(link, 1);
+	link->traversal(link);
+	link->destroy(link);
 	link->traversal(link);
 }

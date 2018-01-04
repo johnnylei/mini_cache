@@ -12,9 +12,10 @@ typedef struct _commandParser {
 	char * command;
 	char ** params;
 	int paramsSize;
-	void (* run)(struct _commandParser *);
 	ExcepSign * exception;
 	Event * event;
+	void (* run)(struct _commandParser *);
+	void (* destroy)(void *);
 } CommandParser;
 
 CommandParser * initCommandParser(Server *server);
