@@ -24,6 +24,7 @@ char * run(Server* server) {
 		parser->run(parser);
 		executer->run(executer);
 
+//		server->reflushRecv(server);
 		server->event->trigger(server->event, AfterRun, (void *)server);
 	} CatchElse (server->exception) {
 		return server->exception->message;
@@ -36,7 +37,7 @@ char * run(Server* server) {
 	return "SUCCESS\n";
 }
 
-int appendRecv(Server * server, char *str, int size) {
+int serverAppendRecv(Server * server, char *str, int size) {
 	server->recvSize += size;
 	int _size = server->recvSize * sizeof(char);
 	char *tmp = (char *)malloc(_size);
@@ -48,12 +49,19 @@ int appendRecv(Server * server, char *str, int size) {
 
 	free(server->recv);
 	server->recv = tmp;
-	return 1;
+	return SUCCESS;
+}
+
+void serverRefulshRecv(Server * server) {
+	free(server->recv);
 }
 
 void serverDestroy(void *object) {
 	Server * server = (Server *)object;
-	free(server->recv);
+	if (NULL != server->recv) {
+		free(server->recv);
+	}
+
 	server->exception->destroy(server->exception);
 	server->event->destroy(server->event);
 	server->executer->destroy(server->executer);
@@ -72,7 +80,8 @@ Server * initServer(int fd, HashTable * dataStorage) {
 	server->executer = initCommandExecuter(dataStorage, server->exception);
 
 	server->run = run;
-	server->appendRecv = appendRecv;
+	server->appendRecv = serverAppendRecv;
+	server->reflushRecv = serverRefulshRecv;
 	server->destroy = serverDestroy;
 
 	return server;

@@ -16,6 +16,7 @@ typedef struct _server {
 
 	char * (* run)(struct _server *);
 	int (* appendRecv)(struct _server *, char *, int);
+	void (* reflushRecv)(struct _server *);
 	void (* destroy)(void *);
 } Server;
 
