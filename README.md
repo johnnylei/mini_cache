@@ -1,5 +1,5 @@
 ## mini_cache
-this is a high performance and stable memory cache, based on epoll and mutil thread
+this is a high performance and stable memory cache, based on **epoll** and **mutil thread**
 
 ## author
 - name:johnny
