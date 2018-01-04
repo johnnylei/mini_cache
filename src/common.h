@@ -5,4 +5,5 @@
 #define FAILED 0
 #define BeforeRun "BeforeRun"
 #define AfterRun "AfterRun"
+#define STRLEN(str) strlen(str) + 1
 #endif

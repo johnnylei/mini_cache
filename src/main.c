@@ -97,8 +97,8 @@ int main() {
 				}
 
 				send_buff = server->run(server);
-				server->destroy(server);
 				send(client_fd, send_buff, strlen(send_buff) + 1, 0);
+				server->destroy(server);
 			}
 		}
 	}
