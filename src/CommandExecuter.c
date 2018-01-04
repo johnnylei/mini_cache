@@ -42,7 +42,7 @@ int setValue(CommandExecuter * executer) {
 		Throw(executer->exception);
 	}
 
-	Bucket * bucket = initBucket(executer->parser->params[0], (void *)executer->parser->params[1], strlen(executer->parser->params[1]), free);
+	Bucket * bucket = initBucket(executer->parser->params[0], (void *)executer->parser->params[1], strlen(executer->parser->params[1]) + 1, free);
 	int ret = dataStorage->insert(dataStorage, bucket);
 	if (ret == FAILED) {
 		return FAILED;
