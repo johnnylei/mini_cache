@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 #include "HashTable.h"
 #include "common.h"
 #include "Link.h"
@@ -157,6 +158,7 @@ void hashDestroy(void * object) {
 
 HashTable * initHash() {
 	HashTable *ht = (HashTable *)malloc(sizeof(HashTable));
+	bzero(ht, sizeof(HashTable));
 	ht->size = HASH_TABLE_INIT_SIZE;	
 	ht->element_num = 0;
 	ht->buckets = (Bucket **)calloc(ht->size, sizeof(Bucket *));
@@ -172,6 +174,7 @@ HashTable * initHash() {
 
 HashTable * initHashWithSize(int size) {
 	HashTable *ht = (HashTable *)malloc(sizeof(HashTable)); 
+	bzero(ht, sizeof(HashTable));
 	ht->size = size;	
 	ht->element_num = 0;
 	ht->buckets = (Bucket **)calloc(ht->size, sizeof(Bucket *));
@@ -191,15 +194,27 @@ void bucketDestroy(void * object) {
 		bucket->destroyValue(bucket->value);
 	}
 	
+	free(bucket->key);
 	free(bucket);
 }
 
-Bucket * initBucket(const char * key, void * value, void (* destroyValue)(void *)) {
+Bucket * initBucket(const char * key, void * value, unsigned long valueSize, void (* destroyValue)(void *)) {
 	Bucket * bucket = (Bucket *)malloc(sizeof(Bucket));
-	bucket->key = (char *)malloc(sizeof(char));
+	bzero(bucket, sizeof(Bucket));
+	int keySize = strlen(key);
+	bucket->key = (char *)malloc(keySize);
+	bucket->keySize = keySize;
 	strcpy(bucket->key, key);
-	bucket->value = value;
-	bucket->valueSize = sizeof(value);
+	bucket->valueSize = valueSize;
+
+	if (0 == valueSize) {
+		bucket->value = value;
+	} else {
+		bucket->value = malloc(bucket->valueSize);
+		bzero(bucket->value, bucket->valueSize);
+		memcpy(bucket->value, value, bucket->valueSize);
+	}
+
 	bucket->destroy = bucketDestroy;
 	bucket->destroyValue = destroyValue;
 	return bucket;

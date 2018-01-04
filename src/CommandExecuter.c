@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <strings.h>
 #include "CommandExecuter.h"
 #include "CommandParser.h"
 #include "Server.h"
@@ -41,7 +42,7 @@ int setValue(CommandExecuter * executer) {
 		Throw(executer->exception);
 	}
 
-	Bucket * bucket = initBucket(executer->parser->params[0], (void *)executer->parser->params[1], NULL);
+	Bucket * bucket = initBucket(executer->parser->params[0], (void *)executer->parser->params[1], strlen(executer->parser->params[1]), free);
 	int ret = dataStorage->insert(dataStorage, bucket);
 	if (ret == FAILED) {
 		return FAILED;
@@ -84,6 +85,7 @@ int getValue(CommandExecuter * executer) {
 		Throw(executer->exception);
 	}
 	executer->result->ret = (char *)malloc(result->valueSize);
+	bzero(executer->result->ret, result->valueSize);
 	strcpy(executer->result->ret, (char *)result->value);
 
 	return SUCCESS;
@@ -97,7 +99,7 @@ int listPushValue(CommandExecuter * executer) {
 		Throw(executer->exception);
 	}
 
-	LinkNode * node = initLinkNode((void *)executer->parser->params[1], NULL);
+	LinkNode * node = initLinkNode((void *)executer->parser->params[1], strlen(executer->parser->params[1]) + 1, free);
 	Link * link;
 	Bucket * result;
 	int ret = dataStorage->lookup(dataStorage, executer->parser->params[0], &result);
@@ -110,7 +112,7 @@ int listPushValue(CommandExecuter * executer) {
 
 	link = initLink();
 	link->append(link, node);
-	Bucket * bucket = initBucket(executer->parser->params[0], link, link->destroy);
+	Bucket * bucket = initBucket(executer->parser->params[0], link, 0, link->destroy);
 	dataStorage->insert(dataStorage, bucket);
 	executer->result->flag = SUCCESS;
 	return SUCCESS;
@@ -131,7 +133,9 @@ int listLen(CommandExecuter * executer) {
 	}
 
 	Link * values = (Link *)result->value;
-	executer->result->ret = (char *)malloc(10 * sizeof(char));
+	int size = 10 * sizeof(char);
+	executer->result->ret = (char *)malloc(size);
+	bzero(executer->result->ret, size);
 	sprintf(executer->result->ret, "%d", values->size);
 	return SUCCESS;
 }
@@ -223,6 +227,7 @@ int listValue(CommandExecuter * executer) {
 
 	size += values->size * sizeof(char);
 	executer->result->ret = (char *)malloc(size);
+	bzero(executer->result->ret, size);
 	for (int i = 0; i < values->size; i++) {
 		strcat(executer->result->ret, tmp[i]);
 		strcat(executer->result->ret, ",");
@@ -269,7 +274,7 @@ int hashmapSetValue(CommandExecuter * executer) {
 	}
 
 	HashTable * hashTable;
-	Bucket * bucket = initBucket(executer->parser->params[1], (void *)executer->parser->params[2], NULL);
+	Bucket * bucket = initBucket(executer->parser->params[1], (void *)executer->parser->params[2], strlen(executer->parser->params[2]) + 1, free);
 	Bucket * result;
 	int ret = dataStorage->lookup(dataStorage, executer->parser->params[0], &result);
 	if (ret == SUCCESS) {
@@ -282,8 +287,12 @@ int hashmapSetValue(CommandExecuter * executer) {
 	hashTable = initHashWithSize(ItemHashTableInitSize);
 	hashTable->insert(hashTable, bucket);
 
-	bucket = initBucket(executer->parser->params[0], (void *)hashTable, hashTable->destroy);
-	dataStorage->insert(dataStorage, bucket);
+	bucket = initBucket(executer->parser->params[0], (void *)hashTable, 0, hashTable->destroy);
+	ret = dataStorage->insert(dataStorage, bucket);
+	if (ret == FAILED) {
+		return FAILED;
+	}
+
 	executer->result->flag = SUCCESS;
 	return SUCCESS;
 }
@@ -310,6 +319,7 @@ int hashmapGetValue(CommandExecuter *executer) {
 	}
 
 	executer->result->ret = (char *)malloc(result->valueSize);
+	bzero(executer->result->ret, result->valueSize);
 	strcpy(executer->result->ret, (char *)result->value);
 
 	return SUCCESS;
@@ -350,67 +360,67 @@ int initCommandHandlerMap() {
 		return FAILED;
 	}
 
-	Bucket * bucket = initBucket("set", (void *)setValue, NULL);
+	Bucket * bucket = initBucket("set", (void *)setValue, 0, NULL);
 	int ret = commandHandlerMap->insert(commandHandlerMap, bucket);
 	if (ret == FAILED) {
 		return FAILED;
 	}
 
-	bucket = initBucket("get", (void *)getValue, NULL);
+	bucket = initBucket("get", (void *)getValue, 0, NULL);
 	ret = commandHandlerMap->insert(commandHandlerMap, bucket);
 	if (ret == FAILED) {
 		return FAILED;
 	}
 
-	bucket = initBucket("del", (void *)delValue, NULL);
+	bucket = initBucket("del", (void *)delValue, 0, NULL);
 	ret = commandHandlerMap->insert(commandHandlerMap, bucket);
 	if (ret == FAILED) {
 		return FAILED;
 	}
 
-	bucket = initBucket("lpush", (void *)listPushValue, NULL);
+	bucket = initBucket("lpush", (void *)listPushValue, 0, NULL);
 	ret = commandHandlerMap->insert(commandHandlerMap, bucket);
 	if (ret == FAILED) {
 		return FAILED;
 	}
 
-	bucket = initBucket("llen", (void *)listLen, NULL);
+	bucket = initBucket("llen", (void *)listLen, 0, NULL);
 	ret = commandHandlerMap->insert(commandHandlerMap, bucket);
 	if (ret == FAILED) {
 		return FAILED;
 	}
 
-	bucket = initBucket("lrange", (void *)listRangeValue, NULL);
+	bucket = initBucket("lrange", (void *)listRangeValue, 0, NULL);
 	ret = commandHandlerMap->insert(commandHandlerMap, bucket);
 	if (ret == FAILED) {
 		return FAILED;
 	}
 
-	bucket = initBucket("list", (void *)listValue, NULL);
+	bucket = initBucket("list", (void *)listValue, 0, NULL);
 	ret = commandHandlerMap->insert(commandHandlerMap, bucket);
 	if (ret == FAILED) {
 		return FAILED;
 	}
 
-	bucket = initBucket("ldel", (void *)listDelValue, NULL);
+	bucket = initBucket("ldel", (void *)listDelValue, 0, NULL);
 	ret = commandHandlerMap->insert(commandHandlerMap, bucket);
 	if (ret == FAILED) {
 		return FAILED;
 	}
 
-	bucket = initBucket("hmset", (void *)hashmapSetValue, NULL);
+	bucket = initBucket("hmset", (void *)hashmapSetValue, 0, NULL);
 	ret = commandHandlerMap->insert(commandHandlerMap, bucket);
 	if (ret == FAILED) {
 		return FAILED;
 	}
 
-	bucket = initBucket("hmget", (void *)hashmapGetValue, NULL);
+	bucket = initBucket("hmget", (void *)hashmapGetValue, 0, NULL);
 	ret = commandHandlerMap->insert(commandHandlerMap, bucket);
 	if (ret == FAILED) {
 		return FAILED;
 	}
 
-	bucket = initBucket("hmdel", (void *)hashmapDelValue, NULL);
+	bucket = initBucket("hmdel", (void *)hashmapDelValue, 0, NULL);
 	ret = commandHandlerMap->insert(commandHandlerMap, bucket);
 	if (ret == FAILED) {
 		return FAILED;
@@ -427,6 +437,7 @@ void commandExecuterResultDestroy(void * object) {
 
 CommandExecuterResult * initCommandExecuterResult() {
 	CommandExecuterResult * result = (CommandExecuterResult *)malloc(sizeof(CommandExecuterResult));
+	bzero(result, sizeof(CommandExecuterResult));
 	result->flag = FAILED;
 	result->ret = NULL;
 	result->destroy = commandExecuterResultDestroy;
@@ -449,6 +460,7 @@ CommandExecuter * initCommandExecuter(HashTable * dataStorage, ExcepSign * excep
 	}
 
 	CommandExecuter * executer = (CommandExecuter *)malloc(sizeof(CommandExecuter));
+	bzero(executer, sizeof(CommandExecuter));
 	executer->parser = initCommandParser(exception);
 	executer->exception = exception;
 	executer->run = commandExecuterRun;

@@ -18,5 +18,5 @@ typedef struct _link {
 } Link;
 
 Link * initLink();
-LinkNode * initLinkNode(void * value, void (* destroyValue)(void *));
+LinkNode * initLinkNode(void * value, unsigned long valueSize, void (* destroyValue)(void *));
 #endif

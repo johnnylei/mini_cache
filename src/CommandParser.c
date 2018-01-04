@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 #include "CommandParser.h"
 #include "Exception.h"
 #include "Server.h"
@@ -77,6 +78,7 @@ void commandParserSetRecv(CommandParser *parser, char * recv, int size) {
 
 CommandParser * initCommandParser(ExcepSign * exception) {
 	CommandParser * parser = (CommandParser *)malloc(sizeof(CommandParser));
+	bzero(parser, sizeof(CommandParser));
 	parser->command = NULL;
 	parser->recv = NULL;
 	parser->recvSize = 0;

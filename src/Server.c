@@ -54,7 +54,7 @@ int appendRecv(Server * server, char *str, int size) {
 void serverDestroy(void *object) {
 	Server * server = (Server *)object;
 	free(server->recv);
-	free(server->exception);
+	server->exception->destroy(server->exception);
 	server->event->destroy(server->event);
 	server->executer->destroy(server->executer);
 	free(server);
@@ -62,11 +62,12 @@ void serverDestroy(void *object) {
 
 Server * initServer(int fd, HashTable * dataStorage) {
 	Server * server = (Server *)malloc(sizeof(Server));
+	bzero(server, sizeof(Server));
 	server->recv = NULL;
 	server->recvSize = 0;
 	server->fd = fd;
 	server->event = initEvent();
-	server->exception = (ExcepSign *)malloc(sizeof(ExcepSign));
+	server->exception = initException();
 	server->dataStorage = dataStorage;
 	server->executer = initCommandExecuter(dataStorage, server->exception);
 

@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <strings.h>
 #include "Event.h"
 #include "HashTable.h"
 #include "Link.h"
@@ -7,7 +8,7 @@ void * on(Event * event, const char * str, void * (* handler)(void *)) {
 	HashTable * eventList = event->event_list;
 	
 	Link * handlers;
-	LinkNode * node = initLinkNode(handler, NULL);
+	LinkNode * node = initLinkNode(handler, 0, NULL);
 	Bucket * result;
 	int ret = eventList->lookup(eventList, str, &result);
 	if (ret != FAILED) {
@@ -18,7 +19,7 @@ void * on(Event * event, const char * str, void * (* handler)(void *)) {
 
 	handlers = initLink();
 	handlers->append(handlers, node);
-	Bucket * bucket = initBucket(str, handlers, handlers->destroy);
+	Bucket * bucket = initBucket(str, handlers, sizeof(Link), handlers->destroy);
 	eventList->insert(eventList, bucket);
 }
 
@@ -51,6 +52,7 @@ void eventDestroy(void * object) {
 
 Event * initEvent() {
 	Event * event = (Event *)malloc(sizeof(Event));
+	bzero(event, sizeof(Event));
 	event->on = on;
 	event->off = off;
 	event->trigger = trigger;

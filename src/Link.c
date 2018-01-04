@@ -1,4 +1,6 @@
 #include <stdlib.h> 
+#include <string.h> 
+#include <strings.h> 
 #include "Link.h"
 #include "common.h"
 
@@ -70,6 +72,7 @@ void linkDestroy(void * object) {
 
 Link * initLink() {
 	Link * link = (Link *)malloc(sizeof(Link));
+	bzero(link, sizeof(Link));
 	link->head = NULL;
 	link->append = linkAppend;
 	link->del = linkDel;
@@ -87,12 +90,21 @@ void linkNodeDestroy(void * object) {
 	free(node);
 }
 
-LinkNode * initLinkNode(void * value, void (* destroyValue)(void *)) {
+LinkNode * initLinkNode(void * value, unsigned long valueSize, void (* destroyValue)(void *)) {
 	LinkNode * node = (LinkNode *)malloc(sizeof(LinkNode));
-	node->value = value;
-	node->valueSize = sizeof(value);
+	bzero(node, sizeof(LinkNode));
+
+	node->valueSize = valueSize;
+	if (valueSize == 0) {
+		node->value = value;
+	} else {
+		node->value = malloc(valueSize);
+		memset(node->value, '\0', valueSize);
+		memcpy(node->value, value, valueSize);
+	}
+
 	node->next = NULL;
-	node->destroy = linkNodeDestroy;
 	node->destroyValue = destroyValue;
+	node->destroy = linkNodeDestroy;
 	return node;
 }

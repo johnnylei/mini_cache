@@ -16,7 +16,7 @@ int main() {
 	link->traversal = printfIntLink;
 	int len = sizeof(arr) / sizeof(int);
 	for (int i = 0; i < len; i++) {
-		LinkNode * node = initLinkNode((void *)&arr[i], NULL);
+		LinkNode * node = initLinkNode((void *)&arr[i], sizeof(int), NULL);
 		link->append(link, node);
 	}
 

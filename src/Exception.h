@@ -2,12 +2,17 @@
 #define _EXCEPTION_H__
 #include <setjmp.h>
 
+#define EXCEPTION_MESSAGE_SIZE 1024
+
 typedef struct tagException {
 	jmp_buf StackInfo;
 	int ExcepType;
-	char message[1024];
+	char * message;
+
+	void (* destroy)(void *);
 } ExcepSign;
 
+ExcepSign * initException();
 // get exception type
 #define ExceType(ExcepSign) ((ExcepSign)->ExcepType) 
 
