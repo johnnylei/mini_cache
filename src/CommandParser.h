@@ -1,7 +1,6 @@
 #ifndef __COMMAND_PARSER_H__
 #define __COMMAND_PARSER_H__
 #include "Exception.h"
-#include "Server.h"
 #include "Event.h"
 
 #define INIT_PARAMS_SIZE 4
@@ -15,8 +14,9 @@ typedef struct _commandParser {
 	ExcepSign * exception;
 	Event * event;
 	void (* run)(struct _commandParser *);
+	void (* setRecv)(struct _commandParser *, char *, int);
 	void (* destroy)(void *);
 } CommandParser;
 
-CommandParser * initCommandParser(Server *server);
+CommandParser * initCommandParser(ExcepSign *exception);
 #endif

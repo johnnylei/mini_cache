@@ -5,10 +5,13 @@
 
 void * on(Event * event, const char * str, void * (* handler)(void *)) {
 	HashTable * eventList = event->event_list;
+	
 	Link * handlers;
 	LinkNode * node = initLinkNode(handler, NULL);
-	int ret = eventList->lookup(eventList, str, (void **)&handlers);
+	Bucket * result;
+	int ret = eventList->lookup(eventList, str, &result);
 	if (ret != FAILED) {
+		handlers = (Link *)result->value;
 		handlers->append(handlers, node);
 		return NULL;
 	}
@@ -24,12 +27,13 @@ void * off(Event * event, const char *str) {
 }
 
 void * trigger(Event * event, const char * str, void * params) {
-	Link * handlers;
-	int ret = event->event_list->lookup(event->event_list, str, (void **)&handlers);
+	Bucket * result;
+	int ret = event->event_list->lookup(event->event_list, str, &result);
 	if (ret == FAILED) {
 		return NULL;
 	}
 
+	Link * handlers = (Link *)result->value;
 	void * (* handler)(void *);
 	LinkNode * current = handlers->head;
 	while(current) {

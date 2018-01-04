@@ -87,7 +87,7 @@ int hashInsert(HashTable *ht, Bucket * bucket) {
 	return SUCCESS;
 }
 
-int hashLookup(HashTable *ht, const char *key, void ** result) {
+int hashLookup(HashTable *ht, const char *key, Bucket ** result) {
 	int index = HASH_INDEX(ht, key);
 	Bucket * bucket = ht->buckets[index];
 
@@ -97,7 +97,7 @@ int hashLookup(HashTable *ht, const char *key, void ** result) {
 
 	while (bucket) {
 		if (strcmp(bucket->key, key) == 0) {
-			*result = bucket->value;
+			*result = bucket;
 			return SUCCESS;
 		}
 

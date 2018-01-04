@@ -3,8 +3,8 @@
 #include "HashTable.h"
 #include "Exception.h"
 #include "CommandParser.h"
-#include "Server.h"
 #include "Event.h"
+
 typedef struct _commandExecuterresult {
 	int flag;
 	char * ret;
@@ -22,6 +22,6 @@ typedef struct _commandExecuter {
 	void (* destroy)(void *);
 } CommandExecuter;
 
-CommandExecuter * initCommandExecuter(Server *server, CommandParser * parser);
+CommandExecuter * initCommandExecuter(HashTable * dataStorage, ExcepSign * exception);
 CommandExecuterResult * initCommandExecuterResult();
 #endif

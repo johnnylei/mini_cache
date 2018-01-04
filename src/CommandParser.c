@@ -18,6 +18,12 @@ void removeTail(CommandParser * parser) {
 
 void commandParserRun(CommandParser * parser) {
 	parser->event->trigger(parser->event, BeforeRun, (void *)parser);
+	if (NULL == parser->recv) {
+		strcpy(parser->exception->message, "receive message could not be null");
+		parser->exception->ExcepType = 1;
+		Throw(parser->exception);
+	}
+
 	removeTail(parser);
 	char * token;
 	token = strtok(parser->recv, DELIMITER);
@@ -56,20 +62,30 @@ void commandParserDestroy(void * object) {
 	free(parser);
 }
 
-CommandParser * initCommandParser(Server * server) {
-	CommandParser * parser = (CommandParser *)malloc(sizeof(CommandParser));
-	parser->recvSize = server->recvSize;
+void commandParserSetRecv(CommandParser *parser, char * recv, int size) {
+	if (NULL == recv) {
+		strcpy(parser->exception->message, "recv could not be null");
+		parser->exception->ExcepType = 1;
+		Throw(parser->exception);
+	}
 
+	parser->recvSize = size;
 	parser->recv = (char *)malloc(parser->recvSize * sizeof(char));
 	memset(parser->recv, '\0', parser->recvSize);
-	strcpy(parser->recv, server->recv);
+	strcpy(parser->recv, recv);
+}
 
+CommandParser * initCommandParser(ExcepSign * exception) {
+	CommandParser * parser = (CommandParser *)malloc(sizeof(CommandParser));
 	parser->command = NULL;
+	parser->recv = NULL;
+	parser->recvSize = 0;
 	parser->params = (char **)calloc(INIT_PARAMS_SIZE, sizeof(char *));
 	parser->paramsSize = INIT_PARAMS_SIZE;
 	parser->run = commandParserRun;
-	parser->exception = server->exception;
+	parser->exception = exception;
 	parser->event = initEvent();
 	parser->destroy = commandParserDestroy;
+	parser->setRecv = commandParserSetRecv;
 	return parser;
 }

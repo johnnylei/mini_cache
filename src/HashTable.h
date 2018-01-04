@@ -28,7 +28,7 @@ typedef struct _HashTable {
 	int (* insert)(struct _HashTable *, Bucket *);
 	int (* remove)(struct _HashTable *, const char *);
 	void (* destroy)(void *);
-	int (* lookup)(struct _HashTable *, const char *, void **);
+	int (* lookup)(struct _HashTable *, const char *, Bucket **);
 } HashTable;
 
 Bucket * initBucket(const char *key, void *value, void (* destroyValue)(void *));

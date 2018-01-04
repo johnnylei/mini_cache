@@ -10,30 +10,29 @@
 #include "HashTable.h"
 
 char * run(Server* server) {
-	CommandExecuter * executer;
-	CommandParser * parser;
+	CommandExecuter * executer = server->executer;
+	CommandParser * parser = executer->parser;
 	Try(server->exception) {
 		server->event->trigger(server->event, BeforeRun, (void *)server);
-		parser = initCommandParser(server);
-		parser->run(parser);
+		if (NULL == server->recv) {
+			strcpy(server->exception->message, "recv could not be null");
+			server->exception->ExcepType = 1;
+			Throw(server->exception);
+		}
 
-		executer = initCommandExecuter(server, parser);
+		parser->setRecv(parser, server->recv, server->recvSize);
+		parser->run(parser);
 		executer->run(executer);
+
 		server->event->trigger(server->event, AfterRun, (void *)server);
 	} CatchElse (server->exception) {
-		parser->destroy(parser);
-		executer->destroy(executer);
 		return server->exception->message;
 	}
 
 	if (executer->result->flag != SUCCESS) {
-//		parser->destroy(parser);
-//		executer->destroy(executer);
 		return executer->result->ret;
 	}
 
-	parser->destroy(parser);
-	executer->destroy(executer);
 	return "SUCCESS\n";
 }
 
@@ -57,20 +56,23 @@ void serverDestroy(void *object) {
 	free(server->recv);
 	free(server->exception);
 	server->event->destroy(server->event);
+	server->executer->destroy(server->executer);
 	free(server);
 }
 
 Server * initServer(int fd, HashTable * dataStorage) {
 	Server * server = (Server *)malloc(sizeof(Server));
 	server->recv = NULL;
-	server->fd = fd;
 	server->recvSize = 0;
-	server->run = run;
-	server->appendRecv = appendRecv;
-	server->destroy = serverDestroy;
+	server->fd = fd;
 	server->event = initEvent();
 	server->exception = (ExcepSign *)malloc(sizeof(ExcepSign));
 	server->dataStorage = dataStorage;
+	server->executer = initCommandExecuter(dataStorage, server->exception);
+
+	server->run = run;
+	server->appendRecv = appendRecv;
+	server->destroy = serverDestroy;
 
 	return server;
 }

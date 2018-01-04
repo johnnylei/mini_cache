@@ -13,14 +13,16 @@
 HashTable * commandHandlerMap;
 void commandExecuterRun(CommandExecuter * executer) {
 	executer->event->trigger(executer->event, BeforeRun, (void *)executer);
-	int (* handler)(CommandExecuter *);
-	int ret = commandHandlerMap->lookup(commandHandlerMap, executer->parser->command, (void **)&handler);
+	Bucket * result;
+	int ret = commandHandlerMap->lookup(commandHandlerMap, executer->parser->command, &result);
 	if (ret == FAILED) {
 		executer->exception->ExcepType = 2;
 		sprintf(executer->exception->message, "unknow command %s\n", executer->parser->command);
 		Throw(executer->exception);
 	}
 	
+	
+	int (* handler)(CommandExecuter *) = (int (*)(CommandExecuter *))result->value;
 	ret = handler(executer);
 	if (ret == FAILED) {
 		executer->exception->ExcepType = 2;
@@ -74,12 +76,15 @@ int getValue(CommandExecuter * executer) {
 		Throw(executer->exception);
 	}
 
-	int ret = dataStorage->lookup(dataStorage, executer->parser->params[0], (void **)&executer->result->ret);
+	Bucket * result;
+	int ret = dataStorage->lookup(dataStorage, executer->parser->params[0], &result);
 	if (ret == FAILED) {
 		executer->exception->ExcepType = 2;
 		sprintf(executer->exception->message, "could not found key=%s\n", executer->parser->params[0]);
 		Throw(executer->exception);
 	}
+	executer->result->ret = (char *)malloc(result->valueSize);
+	strcpy(executer->result->ret, (char *)result->value);
 
 	return SUCCESS;
 }
@@ -94,8 +99,10 @@ int listPushValue(CommandExecuter * executer) {
 
 	LinkNode * node = initLinkNode((void *)executer->parser->params[1], NULL);
 	Link * link;
-	int ret = dataStorage->lookup(dataStorage, executer->parser->params[0], (void **)&link);
+	Bucket * result;
+	int ret = dataStorage->lookup(dataStorage, executer->parser->params[0], &result);
 	if (ret != FAILED) {
+		link = (Link *)result->value;
 		executer->result->flag = SUCCESS;
 		link->append(link, node);
 		return SUCCESS;
@@ -117,12 +124,13 @@ int listLen(CommandExecuter * executer) {
 		Throw(executer->exception);
 	}
 
-	Link * values;
-	int ret = dataStorage->lookup(dataStorage, executer->parser->params[0], (void **)&values);
+	Bucket * result;
+	int ret = dataStorage->lookup(dataStorage, executer->parser->params[0], &result);
 	if (ret == FAILED) {
 		return FAILED;
 	}
 
+	Link * values = (Link *)result->value;
 	executer->result->ret = (char *)malloc(10 * sizeof(char));
 	sprintf(executer->result->ret, "%d", values->size);
 	return SUCCESS;
@@ -144,13 +152,13 @@ int listRangeValue(CommandExecuter * executer) {
 		Throw(executer->exception);
 	}
 
-	Link * values;
-	int ret = dataStorage->lookup(dataStorage, executer->parser->params[0], (void **)&values);
+	Bucket * result;
+	int ret = dataStorage->lookup(dataStorage, executer->parser->params[0], &result);
 	if (ret == FAILED) {
 		return FAILED;
 	}
-
 	
+	Link * values = (Link *)result->value;
 	LinkNode * current = values->head;
 
 	int index = 0, _index = 0;
@@ -195,12 +203,13 @@ int listValue(CommandExecuter * executer) {
 		Throw(executer->exception);
 	}
 
-	Link * values;
-	int ret = dataStorage->lookup(dataStorage, executer->parser->params[0], (void **)&values);
+	Bucket * result;
+	int ret = dataStorage->lookup(dataStorage, executer->parser->params[0], &result);
 	if (ret == FAILED) {
 		return FAILED;
 	}
 
+	Link * values = (Link *)result->value;
 	unsigned long size = 0;
 	LinkNode * current = values->head;
 	char ** tmp = (char **)calloc(values->size, sizeof(char));
@@ -231,12 +240,13 @@ int listDelValue(CommandExecuter * executer) {
 		Throw(executer->exception);
 	}
 
-	Link * values;
-	int ret = dataStorage->lookup(dataStorage, executer->parser->params[0], (void **)&values);
+	Bucket * result;
+	int ret = dataStorage->lookup(dataStorage, executer->parser->params[0], &result);
 	if (ret == FAILED) {
 		return FAILED;
 	}
 
+	Link * values = (Link *)result->value;
 	int offset = atoi(executer->parser->params[1]);
 	ret = values->del(values, offset);
 	if (ret == FAILED) {
@@ -260,8 +270,10 @@ int hashmapSetValue(CommandExecuter * executer) {
 
 	HashTable * hashTable;
 	Bucket * bucket = initBucket(executer->parser->params[1], (void *)executer->parser->params[2], NULL);
-	int ret = dataStorage->lookup(dataStorage, executer->parser->params[0], (void **)&hashTable);
+	Bucket * result;
+	int ret = dataStorage->lookup(dataStorage, executer->parser->params[0], &result);
 	if (ret == SUCCESS) {
+		hashTable = (HashTable *)result->value;
 		hashTable->insert(hashTable, bucket);
 		executer->result->flag = SUCCESS;
 		return SUCCESS;
@@ -284,17 +296,21 @@ int hashmapGetValue(CommandExecuter *executer) {
 		Throw(executer->exception);
 	}
 	
-	HashTable * hashTable;
-	int ret = dataStorage->lookup(dataStorage, executer->parser->params[0], (void **)&hashTable);
+	Bucket *result;
+	int ret = dataStorage->lookup(dataStorage, executer->parser->params[0], &result);
 	if (ret == FAILED) {
 		return FAILED;
 	}
 
 
-	ret = hashTable->lookup(hashTable, executer->parser->params[1], (void **)&executer->result->ret);
+	HashTable * hashTable = (HashTable *)result->value;
+	ret = hashTable->lookup(hashTable, executer->parser->params[1], &result);
 	if (ret == FAILED) {
 		return FAILED;
 	}
+
+	executer->result->ret = (char *)malloc(result->valueSize);
+	strcpy(executer->result->ret, (char *)result->value);
 
 	return SUCCESS;
 }
@@ -307,12 +323,13 @@ int hashmapDelValue(CommandExecuter * executer) {
 		Throw(executer->exception);
 	}
 
-	HashTable * hashTable;
-	int ret = dataStorage->lookup(dataStorage, executer->parser->params[0], (void **)&hashTable);
+	Bucket * result;
+	int ret = dataStorage->lookup(dataStorage, executer->parser->params[0], &result);
 	if (ret == FAILED) {
 		return FAILED;
 	}
 
+	HashTable * hashTable = (HashTable *)result->value;
 	ret = hashTable->remove(hashTable, executer->parser->params[1]);
 	if (ret == FAILED) {
 		return FAILED;
@@ -420,23 +437,24 @@ void commandExecuterDestroy(void * object) {
 	CommandExecuter * executer = (CommandExecuter *)object;
 	executer->event->destroy(executer->event);
 	executer->result->destroy(executer->result);
+	executer->parser->destroy(executer->parser);
 	free(executer);
 }
 
-CommandExecuter * initCommandExecuter(Server * server, CommandParser * parser) {
+CommandExecuter * initCommandExecuter(HashTable * dataStorage, ExcepSign * exception) {
 	if (initCommandHandlerMap() == FAILED) {
-		server->exception->ExcepType = 2;
-		strcpy(server->exception->message, "init command hander map failed");
-		Throw(server->exception);
+		exception->ExcepType = 2;
+		strcpy(exception->message, "init command hander map failed");
+		Throw(exception);
 	}
 
 	CommandExecuter * executer = (CommandExecuter *)malloc(sizeof(CommandExecuter));
-	executer->parser = parser;
-	executer->exception = server->exception;
+	executer->parser = initCommandParser(exception);
+	executer->exception = exception;
 	executer->run = commandExecuterRun;
 	executer->event = initEvent();
 	executer->result = initCommandExecuterResult();
-	executer->dataStorage = server->dataStorage;
+	executer->dataStorage = dataStorage;
 	executer->destroy = commandExecuterDestroy;
 	return executer;
 }
