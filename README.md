@@ -1,5 +1,5 @@
 ## mini_cache
-this is a high performance memory cache, based on **epoll** and **mutil thread**
+这是一个高速缓存服务器, 基于 **linux**, **epoll**, **tcp**, **hashmap** and **mutil thread**
 
 ## author
 - name:johnny
