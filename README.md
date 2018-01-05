@@ -74,7 +74,7 @@ hmdel key1 child_key
 
 ## next to do
 - 优化server,不能每次请求都生成一个server,然后运行完成又把server销毁
-- author,登录认证
+- author,登录认证，权限控制
 - log
 - 实现消息队列(message queue)
 - 实现php扩展客户端(php extension client)
