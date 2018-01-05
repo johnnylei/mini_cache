@@ -80,7 +80,8 @@ int main() {
 		ret = epoll_wait(epfd, events, MAX_EVENT_NUMBER, -1);
 		assert(ret >= 0);
 
-		for (int i = 0; i < ret; i++) {
+		int i;
+		for (i = 0; i < ret; i++) {
 			int client_fd = events[i].data.fd;
 
 			if (events[i].events & EPOLLIN) {

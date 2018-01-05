@@ -189,8 +189,9 @@ int listRangeValue(CommandExecuter * executer) {
 	size = size + _index * sizeof(char);
 	executer->result->ret = (char *)malloc(size);
 	memset(executer->result->ret, '\0', size);
-	
-	for (int i = 0; i < _index; i++) {
+
+	int i;
+	for (i = 0; i < _index; i++) {
 		strcat(executer->result->ret, tmp[i]);
 		strcat(executer->result->ret, ",");
 	}
@@ -228,7 +229,8 @@ int listValue(CommandExecuter * executer) {
 	size += values->size * sizeof(char);
 	executer->result->ret = (char *)malloc(size);
 	bzero(executer->result->ret, size);
-	for (int i = 0; i < values->size; i++) {
+	int i;
+	for (i = 0; i < values->size; i++) {
 		strcat(executer->result->ret, tmp[i]);
 		strcat(executer->result->ret, ",");
 	}

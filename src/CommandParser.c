@@ -8,7 +8,8 @@
 #include "Event.h"
 
 void removeTail(CommandParser * parser) {
-	for (int i = parser->recvSize - 1; i > 0; i--) {
+	int i;
+	for (i = parser->recvSize - 1; i > 0; i--) {
 		if (parser->recv[i] != '\r' && parser->recv[i] != '\n') {
 			break;
 		}

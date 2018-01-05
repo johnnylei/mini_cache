@@ -16,7 +16,8 @@ static int hash_resize(HashTable *ht) {
 	Bucket ** org_buckets = ht->buckets;
 	ht->buckets = buckets;
 
-	for (int i = 0; i < org_size; i++) {
+	int i;
+	for (i = 0; i < org_size; i++) {
 		Bucket * current = org_buckets[i];
 
 		while (current) {
@@ -138,7 +139,8 @@ int hashRemove(HashTable * ht, const char * key) {
 void hashDestroy(void * object) {
 	HashTable *ht = (HashTable *)object;
 	Bucket * tmp, * bucket;
-	for (int i = 0; i < ht->size; i++) {
+	int i; 
+	for (i = 0; i < ht->size; i++) {
 		bucket = ht->buckets[i];
 		if (NULL == bucket) {
 			free(bucket);
