@@ -60,6 +60,7 @@ void commandParserDestroy(void * object) {
 //		free(parser->params[i]);
 //	}
 
+	free(parser->waitingCheckCommand);
 	free(parser->params);
 	free(parser);
 }
@@ -71,10 +72,30 @@ void commandParserSetRecv(CommandParser *parser, char * recv, int size) {
 		Throw(parser->exception);
 	}
 
+	free(parser->recv);
 	parser->recvSize = size;
 	parser->recv = (char *)malloc(parser->recvSize * sizeof(char));
 	memset(parser->recv, '\0', parser->recvSize);
 	strcpy(parser->recv, recv);
+}
+
+void commandParserReflush(CommandParser * parser) {
+	int i = 0;
+	for (; i < parser->paramsSize; i++) {
+		parser->params[i] = NULL;
+	}
+
+	parser->paramsSize = 0;
+	
+}
+
+void * commandParserCheckCommand(void *object) {
+	CommandParser * parser = (CommandParser *)object;
+	if (strcmp(parser->waitingCheckCommand, parser->command) != 0) {
+		strcpy(parser->exception->message, "check command falied");
+		parser->exception->ExcepType = 1;
+		Throw(parser->exception);
+	}
 }
 
 CommandParser * initCommandParser(ExcepSign * exception) {
@@ -88,7 +109,9 @@ CommandParser * initCommandParser(ExcepSign * exception) {
 	parser->run = commandParserRun;
 	parser->exception = exception;
 	parser->event = initEvent();
+	parser->reflush = commandParserReflush;
 	parser->destroy = commandParserDestroy;
 	parser->setRecv = commandParserSetRecv;
+	parser->checkCommand = commandParserCheckCommand;
 	return parser;
 }

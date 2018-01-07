@@ -1,16 +1,16 @@
 #include <stdio.h>
-#include <string.h>
-#include <strings.h>
-#include <stdlib.h>
+#include <string.h> 
+#include <strings.h> 
+#include <stdlib.h> 
 #include "Server.h"
 #include "common.h"
 #include "CommandParser.h"
 #include "CommandExecuter.h"
 #include "Exception.h"
 #include "HashTable.h"
+#include "User.h"
 
-char * run(Server* server) {
-	CommandExecuter * executer = server->executer;
+char * run(Server* server) { CommandExecuter * executer = server->executer;
 	CommandParser * parser = executer->parser;
 	Try(server->exception) {
 		server->event->trigger(server->event, BeforeRun, (void *)server);
@@ -24,17 +24,14 @@ char * run(Server* server) {
 		parser->run(parser);
 		executer->run(executer);
 
-//		server->reflushRecv(server);
 		server->event->trigger(server->event, AfterRun, (void *)server);
 	} CatchElse (server->exception) {
+		server->reflush(server);
 		return server->exception->message;
 	}
 
-	if (executer->result->flag != SUCCESS) {
-		return executer->result->ret;
-	}
-
-	return "SUCCESS\n";
+	server->reflush(server);
+	return executer->result->ret;
 }
 
 int serverAppendRecv(Server * server, char *str, int size) {
@@ -52,8 +49,50 @@ int serverAppendRecv(Server * server, char *str, int size) {
 	return SUCCESS;
 }
 
-void serverRefulshRecv(Server * server) {
-	free(server->recv);
+void serverRefulsh(Server * server) {
+	bzero(server->recv, server->recvSize);
+	server->recvSize = 0;
+	server->executer->reflush(server->executer);
+}
+
+void serverInitUserTable(Server * server) {
+	HashTable * userTable;
+	userTable = initHash();
+	
+	UserGroup * userGroup = initUserGroup("admin", STRLEN("admin"));
+	UserData * userData = initUserData("root", STRLEN("root"), "root@minicache@123", STRLEN("root@minicache@123"), userGroup);
+	Bucket * bucket = initBucket("root", (void *)userData, sizeof(UserData), DATA_TYPE_USER_DATA, userData->destroy);
+	int ret = userTable->insert(userTable, bucket);
+	if (ret != SUCCESS) {
+		return ;
+	}
+
+	userGroup = initUserGroup("admin", STRLEN("admin"));
+	userData = initUserData("admin", STRLEN("admin"), "admin@minicache@123", STRLEN("admin@minicache@123"), userGroup);
+	bucket = initBucket("admin", (void *)userData, sizeof(UserData), DATA_TYPE_USER_DATA, userData->destroy);
+	ret = userTable->insert(userTable, bucket);
+	if (ret != SUCCESS) {
+		return ;
+	}
+	server->userTable = userTable;
+}
+
+void * serverCheckUser(void * object) {
+	Server * server = (Server *)object;
+	char * fd = (char *)malloc(10);
+	sprintf(fd, "%d", server->fd);
+	Bucket * result;
+	int ret = server->userClienMap->lookup(server->userClienMap, fd, &result);
+	if(ret == SUCCESS) {
+		return NULL;
+	}
+
+	if (strncmp(server->recv, "login", strlen("login")) == 0) {
+		return NULL;
+	}
+	
+	strcpy(server->exception->message, "access denied");
+	Throw(server->exception);
 }
 
 void serverDestroy(void *object) {
@@ -65,24 +104,29 @@ void serverDestroy(void *object) {
 	server->exception->destroy(server->exception);
 	server->event->destroy(server->event);
 	server->executer->destroy(server->executer);
+	server->userTable->destroy(server->userTable);
+	server->userClienMap->destroy(server->userClienMap);
 	free(server);
 }
 
-Server * initServer(int fd, HashTable * dataStorage) {
+Server * initServer(HashTable * dataStorage) {
 	Server * server = (Server *)malloc(sizeof(Server));
 	bzero(server, sizeof(Server));
 	server->recv = NULL;
 	server->recvSize = 0;
-	server->fd = fd;
+	server->fd = 0;
 	server->event = initEvent();
 	server->exception = initException();
 	server->dataStorage = dataStorage;
 	server->executer = initCommandExecuter(dataStorage, server->exception);
+	serverInitUserTable(server);
+	server->userClienMap = initHash();
 
 	server->run = run;
 	server->appendRecv = serverAppendRecv;
-	server->reflushRecv = serverRefulshRecv;
+	server->reflush= serverRefulsh;
 	server->destroy = serverDestroy;
+	server->event->on(server->event, BeforeRun, serverCheckUser);
 
 	return server;
 }

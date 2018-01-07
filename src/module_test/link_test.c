@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "../Link.h"
+#include "common.h"
 
 void printfIntLink(Link *link) {
     LinkNode * current = link->head;
@@ -16,7 +17,7 @@ int main() {
 	link->traversal = printfIntLink;
 	int len = sizeof(arr) / sizeof(int);
 	for (int i = 0; i < len; i++) {
-		LinkNode * node = initLinkNode((void *)&arr[i], sizeof(int), NULL);
+		LinkNode * node = initLinkNode((void *)&arr[i], sizeof(int), DATA_TYPE_INT, NULL);
 		link->append(link, node);
 	}
 

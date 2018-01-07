@@ -47,6 +47,7 @@ void * accept_client(void * context) {
 
 int main() {
 	HashTable * dataStorage = initHashWithSize(DATA_STORAGE_INIT_SIZE);
+	Server * server = initServer(dataStorage);
 	struct sockaddr_in server_address;
 	server_address.sin_port = ntohs(12345);
 	server_address.sin_family = AF_INET;
@@ -85,11 +86,16 @@ int main() {
 			int client_fd = events[i].data.fd;
 
 			if (events[i].events & EPOLLIN) {
-				Server * server = initServer(client_fd, dataStorage);
 				while (1) {
 					memset(read_buff, '\0', BUFF_SIZE);
 					ret = recv(client_fd, read_buff, BUFF_SIZE - 1, 0);
-					if (ret < 0 && ((errno == EAGAIN) || (errno == EWOULDBLOCK))) {
+					if (ret < 0) {
+						if (errno == EAGAIN || errno == EWOULDBLOCK) {
+							break;
+						}
+
+						// 连接断开
+						close(client_fd);
 						break;
 					}
 					
@@ -97,12 +103,13 @@ int main() {
 					server->appendRecv(server, read_buff, ret);
 				}
 
+				server->fd = client_fd;
 				send_buff = server->run(server);
 				send(client_fd, send_buff, strlen(send_buff) + 1, 0);
-				server->destroy(server);
 			}
 		}
 	}
 
+	server->destroy(server);
 	close(server_fd);
 }

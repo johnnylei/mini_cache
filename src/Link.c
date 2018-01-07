@@ -90,11 +90,12 @@ void linkNodeDestroy(void * object) {
 	free(node);
 }
 
-LinkNode * initLinkNode(void * value, unsigned long valueSize, void (* destroyValue)(void *)) {
+LinkNode * initLinkNode(void * value, unsigned long valueSize, int valueType, void (* destroyValue)(void *)) {
 	LinkNode * node = (LinkNode *)malloc(sizeof(LinkNode));
 	bzero(node, sizeof(LinkNode));
 
 	node->valueSize = valueSize;
+	node->valueType = valueType;
 	if (valueSize == 0) {
 		node->value = value;
 	} else {

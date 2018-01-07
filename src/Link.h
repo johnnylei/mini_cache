@@ -3,6 +3,7 @@
 typedef struct _linkNode {
 	void * value;
 	unsigned long valueSize;
+	int valueType;
 	struct _linkNode * next;
 	void (* destroy)(void *);
 	void (* destroyValue)(void *);
@@ -18,5 +19,5 @@ typedef struct _link {
 } Link;
 
 Link * initLink();
-LinkNode * initLinkNode(void * value, unsigned long valueSize, void (* destroyValue)(void *));
+LinkNode * initLinkNode(void * value, unsigned long valueSize, int valueType, void (* destroyValue)(void *));
 #endif

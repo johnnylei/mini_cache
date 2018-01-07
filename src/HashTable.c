@@ -200,7 +200,7 @@ void bucketDestroy(void * object) {
 	free(bucket);
 }
 
-Bucket * initBucket(const char * key, void * value, unsigned long valueSize, void (* destroyValue)(void *)) {
+Bucket * initBucket(const char * key, void * value, unsigned long valueSize, int valueType, void (* destroyValue)(void *)) {
 	Bucket * bucket = (Bucket *)malloc(sizeof(Bucket));
 	bzero(bucket, sizeof(Bucket));
 	int keySize = strlen(key) + 1;
@@ -208,6 +208,7 @@ Bucket * initBucket(const char * key, void * value, unsigned long valueSize, voi
 	bucket->keySize = keySize;
 	strcpy(bucket->key, key);
 	bucket->valueSize = valueSize;
+	bucket->valueType = valueType;
 
 	if (0 == valueSize) {
 		bucket->value = value;
