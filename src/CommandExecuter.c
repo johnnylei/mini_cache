@@ -9,6 +9,7 @@
 #include "common.h"
 #include "Exception.h"
 #include "Link.h"
+#include "User.h"
 
 #define ItemHashTableInitSize 128
 #define RET_SUCCESS "SUCCESS"
@@ -392,6 +393,47 @@ int hashmapDelValue(CommandExecuter * executer) {
 	return SUCCESS;
 }
 
+int executeLogin(CommandExecuter * executer) {
+	if (executer->parser->paramsSize != 2) {
+		executer->exception->ExcepType = 2;
+		strcpy(executer->exception->message, "login [username] [password]\n");
+		Throw(executer->exception);
+	}
+	
+	HashTable * userTable = executer->userTable;
+	Bucket * result;
+	int ret = userTable->lookup(userTable, executer->parser->params[0], &result);
+	if (ret != SUCCESS) {
+		executer->exception->ExcepType = 2;
+		strcpy(executer->exception->message, "incorret username or password\n");
+		Throw(executer->exception);
+	}
+
+	UserData * user = (UserData *)result->value;
+	if (strncmp(executer->parser->params[1], user->password, user->password_len) != 0) {
+		executer->exception->ExcepType = 2;
+		strcpy(executer->exception->message, "incorret username or password\n");
+		Throw(executer->exception);
+	}
+	
+	HashTable * userClientTable = executer->userClientMap;
+	char * fd = (char *)malloc(10);
+	sprintf(fd, "%d", executer->fd);
+	
+	Bucket * bucket = initBucket(fd, (void *)user, sizeof(UserData), DATA_TYPE_USER_DATA, user->destroy);
+	UserGroup * group = initUserGroup(user->group->name, user->group->name_len);
+	UserData * _user = (UserData *)bucket->value;
+	_user->group = group;
+	ret = userClientTable->insert(userClientTable, bucket);
+	if (ret == FAILED) {
+		return FAILED;
+	}
+
+	free(fd);
+	executer->result->setRet(executer->result, RET_SUCCESS, STRLEN(RET_SUCCESS));
+	return SUCCESS;
+}
+
 int initCommandHandlerMap() {
 	if (NULL != commandHandlerMap) {
 		return SUCCESS;
@@ -468,6 +510,12 @@ int initCommandHandlerMap() {
 		return FAILED;
 	}
 
+	bucket = initBucket("login", (void *)executeLogin, 0, DATA_TYPE_CALLBACK, NULL);
+	ret = commandHandlerMap->insert(commandHandlerMap, bucket);
+	if (ret == FAILED) {
+		return FAILED;
+	}
+
 	return SUCCESS;
 }
 
@@ -516,7 +564,7 @@ void commandExecuterDestroy(void * object) {
 	free(executer);
 }
 
-CommandExecuter * initCommandExecuter(HashTable * dataStorage, ExcepSign * exception) {
+CommandExecuter * initCommandExecuter(HashTable * dataStorage, HashTable * userTable, HashTable * userClientMap, ExcepSign * exception) {
 	if (initCommandHandlerMap() == FAILED) {
 		exception->ExcepType = 2;
 		strcpy(exception->message, "init command hander map failed");
@@ -531,6 +579,8 @@ CommandExecuter * initCommandExecuter(HashTable * dataStorage, ExcepSign * excep
 	executer->event = initEvent();
 	executer->result = initCommandExecuterResult();
 	executer->dataStorage = dataStorage;
+	executer->userTable = userTable;
+	executer->userClientMap = userClientMap;
 	executer->reflush = commandExecuterReflush;
 	executer->destroy = commandExecuterDestroy;
 	return executer;

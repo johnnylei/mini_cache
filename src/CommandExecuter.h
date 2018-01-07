@@ -14,9 +14,12 @@ typedef struct _commandExecuterresult {
 } CommandExecuterResult;
 
 typedef struct _commandExecuter {
+	int fd;
 	ExcepSign * exception;
 	HashTable * dataStorage;
 	HashTable * commandHandlerMap;
+	HashTable * userTable;
+	HashTable * userClientMap;
 	CommandParser * parser;
 	Event * event;
 	CommandExecuterResult * result;
@@ -25,6 +28,6 @@ typedef struct _commandExecuter {
 	void (* reflush)(struct _commandExecuter *);
 } CommandExecuter;
 
-CommandExecuter * initCommandExecuter(HashTable * dataStorage, ExcepSign * exception);
+CommandExecuter * initCommandExecuter(HashTable * dataStorage, HashTable * userTable, HashTable * userClientMap, ExcepSign * exception);
 CommandExecuterResult * initCommandExecuterResult();
 #endif

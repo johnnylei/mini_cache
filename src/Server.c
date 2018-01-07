@@ -22,6 +22,8 @@ char * run(Server* server) { CommandExecuter * executer = server->executer;
 
 		parser->setRecv(parser, server->recv, server->recvSize);
 		parser->run(parser);
+
+		executer->fd = server->fd;
 		executer->run(executer);
 
 		server->event->trigger(server->event, AfterRun, (void *)server);
@@ -87,6 +89,7 @@ void * serverCheckUser(void * object) {
 		return NULL;
 	}
 
+	free(fd);
 	if (strncmp(server->recv, "login", strlen("login")) == 0) {
 		return NULL;
 	}
@@ -118,9 +121,9 @@ Server * initServer(HashTable * dataStorage) {
 	server->event = initEvent();
 	server->exception = initException();
 	server->dataStorage = dataStorage;
-	server->executer = initCommandExecuter(dataStorage, server->exception);
 	serverInitUserTable(server);
 	server->userClienMap = initHash();
+	server->executer = initCommandExecuter(dataStorage, server->userTable, server->userClienMap, server->exception);
 
 	server->run = run;
 	server->appendRecv = serverAppendRecv;
