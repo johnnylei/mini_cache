@@ -16,6 +16,13 @@ make server
 telnet 127.0.0.1 12345
 ```
 
+## 登录
+```
+// 首先必须要登录
+// 其次这个账号和密码暂时是固定的，写在代码里面的
+login admin admin@minicache@123
+```
+
 ## 键值对
 ### set 
 ```
@@ -72,9 +79,17 @@ hmget key1 child_key
 hmdel key1 child_key
 ```
 
+## 订阅模式
+### 订阅
+```
+subsribe que1
+```
+### 发布
+```
+publish que1 xxxx
+```
+
 ## next to do
-- 优化server,不能每次请求都生成一个server,然后运行完成又把server销毁
-- author,登录认证，权限控制
+- 权限控制
 - log
-- 实现消息队列(message queue)
 - 实现php扩展客户端(php extension client)
