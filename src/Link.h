@@ -15,7 +15,7 @@ typedef struct _link {
 	int (* append)(struct _link *, LinkNode *);
 	int (* del)(struct _link *, int);
 	void (* destroy)(void *);
-	void (* traversal)(struct _link *);
+	void ** (* traversal)(struct _link *);
 } Link;
 
 Link * initLink();

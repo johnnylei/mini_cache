@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <strings.h>
+#include <sys/types.h>
+#include <sys/socket.h>
 #include "CommandExecuter.h"
 #include "CommandParser.h"
 #include "Server.h"
@@ -434,6 +436,77 @@ int executeLogin(CommandExecuter * executer) {
 	return SUCCESS;
 }
 
+int executeSubscribe(CommandExecuter * executer) {
+	if (executer->parser->paramsSize != 1) {
+		executer->exception->ExcepType = 2;
+		strcpy(executer->exception->message, "subscribe [queue]\n");
+		Throw(executer->exception);
+	}
+
+	LinkNode * node = initLinkNode((void *)&executer->fd, sizeof(int), DATA_TYPE_INT, free);
+	Link * link;
+	Bucket * result;
+	int ret = executer->subscribeMap->lookup(executer->subscribeMap, executer->parser->params[0], &result);
+	if (ret == FAILED) {
+		link = initLink();
+		link->append(link, node);
+		Bucket * bucket = initBucket(executer->parser->params[0], link, 0, DATA_TYPE_LINK, link->destroy);
+		executer->subscribeMap->insert(executer->subscribeMap, bucket);
+		executer->result->setRet(executer->result, RET_SUCCESS, STRLEN(RET_SUCCESS));
+		return SUCCESS;
+	}
+
+	if (result->valueType != DATA_TYPE_LINK) {
+		return FAILED;
+	}
+
+	link = (Link *)result->value;
+	link->append(link, node);
+
+	executer->result->setRet(executer->result, RET_SUCCESS, STRLEN(RET_SUCCESS));
+	return SUCCESS;
+}
+
+void ** getSubscribedList(Link * link) {
+	int ** subscibledList = (int **)calloc(link->size, sizeof(int *));
+
+	int index = 0;
+	LinkNode * current = link->head;
+    while(current) {
+        subscibledList[index]= (int *)current->value;
+        current = current->next;
+		index++;
+    }
+	
+	return (void **)subscibledList;
+}
+
+int executePublish(CommandExecuter * executer) {
+	if (executer->parser->paramsSize != 2) {
+		executer->exception->ExcepType = 2;
+		strcpy(executer->exception->message, "publish [queue] [message]\n");
+		Throw(executer->exception);
+	}
+
+	Bucket * result;
+	int ret = executer->subscribeMap->lookup(executer->subscribeMap, executer->parser->params[0], &result);
+	if (ret == FAILED) {
+		return FAILED;
+	}
+
+	Link * link = (Link *)result->value;
+	link->traversal = getSubscribedList;
+	int ** subscribedList = (int **)link->traversal(link);
+	int i;
+	for(i = 0; i < link->size; i++) {
+		send(*subscribedList[i], executer->parser->params[1], STRLEN(executer->parser->params[1]), 0);
+	}
+
+	free(subscribedList);
+	executer->result->setRet(executer->result, RET_SUCCESS, STRLEN(RET_SUCCESS));
+	return SUCCESS;
+}
+
 int initCommandHandlerMap() {
 	if (NULL != commandHandlerMap) {
 		return SUCCESS;
@@ -516,6 +589,19 @@ int initCommandHandlerMap() {
 		return FAILED;
 	}
 
+	bucket = initBucket("subscribe", (void *)executeSubscribe, 0, DATA_TYPE_CALLBACK, NULL);
+	ret = commandHandlerMap->insert(commandHandlerMap, bucket);
+	if (ret == FAILED) {
+		return FAILED;
+	}
+
+
+	bucket = initBucket("publish", (void *)executePublish, 0, DATA_TYPE_CALLBACK, NULL);
+	ret = commandHandlerMap->insert(commandHandlerMap, bucket);
+	if (ret == FAILED) {
+		return FAILED;
+	}
+
 	return SUCCESS;
 }
 
@@ -561,6 +647,7 @@ void commandExecuterDestroy(void * object) {
 	executer->event->destroy(executer->event);
 	executer->result->destroy(executer->result);
 	executer->parser->destroy(executer->parser);
+	executer->subscribeMap->destroy(executer->subscribeMap);
 	free(executer);
 }
 
@@ -580,6 +667,7 @@ CommandExecuter * initCommandExecuter(HashTable * dataStorage, HashTable * userT
 	executer->result = initCommandExecuterResult();
 	executer->dataStorage = dataStorage;
 	executer->userTable = userTable;
+	executer->subscribeMap = initHashWithSize(SUBSCRIBE_MAP_SIZE);
 	executer->userClientMap = userClientMap;
 	executer->reflush = commandExecuterReflush;
 	executer->destroy = commandExecuterDestroy;

@@ -4,7 +4,9 @@
 #include "Exception.h"
 #include "CommandParser.h"
 #include "Event.h"
+#include "Link.h"
 
+#define SUBSCRIBE_MAP_SIZE 1024
 typedef struct _commandExecuterresult {
 	char * ret;
 	unsigned long int retSize;
@@ -20,6 +22,8 @@ typedef struct _commandExecuter {
 	HashTable * commandHandlerMap;
 	HashTable * userTable;
 	HashTable * userClientMap;
+	HashTable * subscribeMap;
+	Link * subscribedLink;
 	CommandParser * parser;
 	Event * event;
 	CommandExecuterResult * result;

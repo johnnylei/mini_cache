@@ -2,7 +2,7 @@
 #include "../Link.h"
 #include "common.h"
 
-void printfIntLink(Link *link) {
+void ** printfIntLink(Link *link) {
     LinkNode * current = link->head;
     while(current) {
         int *data = (int *)current->data;
