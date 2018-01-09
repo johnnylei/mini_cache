@@ -14,13 +14,14 @@ typedef struct _server {
 	ExcepSign * exception;
 	HashTable * dataStorage;
 	HashTable * userTable;
-	HashTable * userClienMap;
+	HashTable * userClientMap;
 	CommandExecuter * executer;
 
 	char * (* run)(struct _server *);
 	int (* appendRecv)(struct _server *, char *, int);
 	void (* reflush)(struct _server *);
 	void (* destroy)(void *);
+	void (* clientClose)(struct _server *);
 } Server;
 
 Server * initServer(HashTable * dataStorage);

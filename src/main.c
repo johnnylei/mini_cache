@@ -77,6 +77,7 @@ int main() {
 	char read_buff[BUFF_SIZE];
 	char * send_buff;
 
+	int is_closed = 1;
 	while(1) {
 		ret = epoll_wait(epfd, events, MAX_EVENT_NUMBER, -1);
 		assert(ret >= 0);
@@ -84,6 +85,7 @@ int main() {
 		int i;
 		for (i = 0; i < ret; i++) {
 			int client_fd = events[i].data.fd;
+			server->fd = client_fd;
 
 			if (events[i].events & EPOLLIN) {
 				while (1) {
@@ -95,17 +97,34 @@ int main() {
 						}
 
 						// 连接断开
+						server->clientClose(server);
+						close(client_fd);
+						break;
+					}
+
+					if (ret == 0) {
+						// 连接断开
+						server->clientClose(server);
 						close(client_fd);
 						break;
 					}
 					
-					assert(ret >= 0);
+					is_closed = 0;
 					server->appendRecv(server, read_buff, ret);
 				}
 
-				server->fd = client_fd;
+				if (is_closed) {
+					break;
+				}
+
 				send_buff = server->run(server);
 				send(client_fd, send_buff, strlen(send_buff) + 1, 0);
+			}
+
+			if (events[i].events & EPOLLRDHUP || events[i].events & EPOLLHUP) {
+				// 连接断开
+				server->clientClose(server);
+				close(client_fd);
 			}
 		}
 	}

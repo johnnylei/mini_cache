@@ -420,20 +420,52 @@ int executeLogin(CommandExecuter * executer) {
 	
 	HashTable * userClientTable = executer->userClientMap;
 	char * fd = (char *)malloc(10);
+	bzero(fd, 10);
 	sprintf(fd, "%d", executer->fd);
 	
-	Bucket * bucket = initBucket(fd, (void *)user, sizeof(UserData), DATA_TYPE_USER_DATA, user->destroy);
 	UserGroup * group = initUserGroup(user->group->name, user->group->name_len);
-	UserData * _user = (UserData *)bucket->value;
-	_user->group = group;
+	UserData * _user = initUserData(user->username, user->username_len, user->password, user->password_len, group);
+	Bucket * bucket = initBucket(fd, (void *)_user, 0, DATA_TYPE_USER_DATA, _user->destroy);
 	ret = userClientTable->insert(userClientTable, bucket);
+	free(fd);
 	if (ret == FAILED) {
 		return FAILED;
 	}
 
-	free(fd);
 	executer->result->setRet(executer->result, RET_SUCCESS, STRLEN(RET_SUCCESS));
 	return SUCCESS;
+}
+
+void * clientSubscribeMapHandler(void * object) {
+	CommandExecuter *executer = (CommandExecuter *)object;
+	HashTable * clientSubscribeMap = executer->clientSubscribeMap;
+	char * fd = (char *)malloc(10);
+	bzero(fd, 10);
+	sprintf(fd, "%d", executer->fd);
+
+	LinkNode * node = initLinkNode((void *)executer->parser->params[0], STRLEN(executer->parser->params[0]), DATA_TYPE_STRING, free);
+	Link * link;
+	Bucket * result;
+	int ret = clientSubscribeMap->lookup(clientSubscribeMap, fd, &result);
+	if(ret == FAILED) {
+		link = initLink();
+		link->append(link, node);
+		Bucket * bucket = initBucket(fd, link, 0, DATA_TYPE_LINK, link->destroy);
+		clientSubscribeMap->insert(clientSubscribeMap, bucket);
+		free(fd);
+		return NULL;
+	}
+
+	
+	free(fd);
+	if (result->valueType != DATA_TYPE_STRING) {
+		executer->exception->ExcepType = 2;
+		strcpy(executer->exception->message, "subscribe failed\n");
+		Throw(executer->exception);
+	}
+
+	link = (Link *)result->value;
+	link->append(link, node);
 }
 
 int executeSubscribe(CommandExecuter * executer) {
@@ -446,13 +478,14 @@ int executeSubscribe(CommandExecuter * executer) {
 	LinkNode * node = initLinkNode((void *)&executer->fd, sizeof(int), DATA_TYPE_INT, free);
 	Link * link;
 	Bucket * result;
-	int ret = executer->subscribeMap->lookup(executer->subscribeMap, executer->parser->params[0], &result);
+	int ret = executer->subscribeClientMap->lookup(executer->subscribeClientMap, executer->parser->params[0], &result);
 	if (ret == FAILED) {
 		link = initLink();
 		link->append(link, node);
 		Bucket * bucket = initBucket(executer->parser->params[0], link, 0, DATA_TYPE_LINK, link->destroy);
-		executer->subscribeMap->insert(executer->subscribeMap, bucket);
+		executer->subscribeClientMap->insert(executer->subscribeClientMap, bucket);
 		executer->result->setRet(executer->result, RET_SUCCESS, STRLEN(RET_SUCCESS));
+		executer->event->on(executer->event, AfterRun, clientSubscribeMapHandler);
 		return SUCCESS;
 	}
 
@@ -463,6 +496,7 @@ int executeSubscribe(CommandExecuter * executer) {
 	link = (Link *)result->value;
 	link->append(link, node);
 
+	executer->event->on(executer->event, AfterRun, clientSubscribeMapHandler);
 	executer->result->setRet(executer->result, RET_SUCCESS, STRLEN(RET_SUCCESS));
 	return SUCCESS;
 }
@@ -489,7 +523,7 @@ int executePublish(CommandExecuter * executer) {
 	}
 
 	Bucket * result;
-	int ret = executer->subscribeMap->lookup(executer->subscribeMap, executer->parser->params[0], &result);
+	int ret = executer->subscribeClientMap->lookup(executer->subscribeClientMap, executer->parser->params[0], &result);
 	if (ret == FAILED) {
 		return FAILED;
 	}
@@ -637,9 +671,76 @@ CommandExecuterResult * initCommandExecuterResult() {
 	return result;
 }
 
+void ** getSubscribedQues(Link *link) {
+	char ** queues = (char **)calloc(link->size, sizeof(char *));
+	
+	int index = 0;
+	LinkNode * current = link->head;
+    while(current) {
+        queues[index]= (char *)current->value;
+        current = current->next;
+		index++;
+    }
+	
+	return (void **)queues;
+}
+
+void commandExecuterClientClose(CommandExecuter * executer) {
+	char * fd = (char *)malloc(10);
+	bzero(fd, 10);
+	sprintf(fd, "%d", executer->fd);
+	HashTable * clientSubscribeMap = executer->clientSubscribeMap;
+	Bucket * result;
+	int ret = clientSubscribeMap->lookup(clientSubscribeMap, fd, &result);
+	if (ret != SUCCESS) {
+		free(fd);
+		return ;
+	}
+
+	Link * link = (Link *)result->value;
+	link->traversal = getSubscribedQues;
+	char ** queues = (char **)link->traversal(link);
+	HashTable * subscribeClientMap = executer->subscribeClientMap;
+	Bucket * _result;
+	Link * _link;
+	LinkNode * current;
+	int i = 0;
+	// 在subscribeClientMap表里面找到所有这个fd监听的地方并且删除掉
+	for (; i < link->size; i++) {
+		ret = subscribeClientMap->lookup(subscribeClientMap, queues[i], &_result);
+		if (ret != SUCCESS || _result->valueType != DATA_TYPE_LINK) {
+			free(fd);
+			executer->exception->ExcepType = 2;
+			strcpy(executer->exception->message, "command executer client close failed, becouse of subscribeClientMap data incorret\n");
+			Throw(executer->exception);
+		}
+
+		_link = (Link *)_result->value;
+		current = _link->head;
+		int j = 0;
+		int * data;
+		while (current) {
+			data = (int *)current->value;
+			if (*data == executer->fd){
+				_link->del(_link, j);
+			}
+
+			j++;
+			current = current->next;
+		}
+	}
+
+	// 删除clientSubscribeMap表里面这个fd所对应的数据
+	clientSubscribeMap->remove(clientSubscribeMap, fd);
+	free(queues);
+	free(fd);
+}
+
 void commandExecuterReflush(CommandExecuter * executer) {
 	executer->parser->reflush(executer->parser);
 	executer->result->reflush(executer->result);
+	executer->event->off(executer->event, BeforeRun);
+	executer->event->off(executer->event, AfterRun);
 }
 
 void commandExecuterDestroy(void * object) {
@@ -647,7 +748,8 @@ void commandExecuterDestroy(void * object) {
 	executer->event->destroy(executer->event);
 	executer->result->destroy(executer->result);
 	executer->parser->destroy(executer->parser);
-	executer->subscribeMap->destroy(executer->subscribeMap);
+	executer->subscribeClientMap->destroy(executer->subscribeClientMap);
+	executer->clientSubscribeMap->destroy(executer->clientSubscribeMap);
 	free(executer);
 }
 
@@ -667,9 +769,12 @@ CommandExecuter * initCommandExecuter(HashTable * dataStorage, HashTable * userT
 	executer->result = initCommandExecuterResult();
 	executer->dataStorage = dataStorage;
 	executer->userTable = userTable;
-	executer->subscribeMap = initHashWithSize(SUBSCRIBE_MAP_SIZE);
 	executer->userClientMap = userClientMap;
+	executer->subscribeClientMap = initHashWithSize(SUBSCRIBE_MAP_SIZE);
+	executer->clientSubscribeMap = initHashWithSize(SUBSCRIBE_MAP_SIZE);
+
 	executer->reflush = commandExecuterReflush;
 	executer->destroy = commandExecuterDestroy;
+	executer->clientClose = commandExecuterClientClose;
 	return executer;
 }

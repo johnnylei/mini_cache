@@ -1,0 +1,271 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+APPLICATION	Makefile	/^APPLICATION = server$/;"	m
+APPLICATION_DEBUG	Makefile	/^APPLICATION_DEBUG = server_debug$/;"	m
+APPLICATION_TEST	Makefile	/^APPLICATION_TEST = server_test$/;"	m
+AfterRun	common.h	7;"	d
+BUFF_SIZE	main.c	24;"	d	file:
+BeforeRun	common.h	6;"	d
+Bucket	HashTable.h	/^} Bucket;$/;"	t	typeref:struct:_Bucket
+COMPILED	Makefile	/^COMPILED = compiled$/;"	m
+C_FILE_LIST	Makefile	/^C_FILE_LIST = $(wildcard *.c)$/;"	m
+Catch	Exception.h	23;"	d
+CatchElse	Exception.h	26;"	d
+CommandExecuter	CommandExecuter.h	/^} CommandExecuter;$/;"	t	typeref:struct:_commandExecuter
+CommandExecuterResult	CommandExecuter.h	/^} CommandExecuterResult;$/;"	t	typeref:struct:_commandExecuterresult
+CommandParser	CommandParser.h	/^} CommandParser;$/;"	t	typeref:struct:_commandParser
+DATA_STORAGE_INIT_SIZE	main.c	25;"	d	file:
+DATA_TYPE_CALLBACK	common.h	12;"	d
+DATA_TYPE_HASHTABLE	common.h	11;"	d
+DATA_TYPE_INT	common.h	13;"	d
+DATA_TYPE_LINK	common.h	10;"	d
+DATA_TYPE_STRING	common.h	9;"	d
+DATA_TYPE_USER_DATA	common.h	14;"	d
+DEBUG_FILE_LIST	Makefile	/^DEBUG_FILE_LIST = $(patsubst %.c, %.debug, $(C_FILE_LIST))$/;"	m
+DELIMITER	CommandParser.h	7;"	d
+D_FILE_LIST	Makefile	/^D_FILE_LIST = $(patsubst %.c, %.d, $(C_FILE_LIST))$/;"	m
+EXCEPTION_MESSAGE_SIZE	Exception.h	5;"	d
+Event	Event.h	/^} Event;$/;"	t	typeref:struct:_event
+ExceType	Exception.h	17;"	d
+ExcepSign	Exception.h	/^} ExcepSign;$/;"	t	typeref:struct:tagException
+ExcepType	Exception.h	/^	int ExcepType;$/;"	m	struct:tagException
+FAILED	common.h	5;"	d
+HASH_INDEX	HashTable.h	7;"	d
+HASH_TABLE_INIT_SIZE	HashTable.h	6;"	d
+HashTable	HashTable.h	/^} HashTable;$/;"	t	typeref:struct:_HashTable
+INIT_PARAMS_SIZE	CommandParser.h	6;"	d
+ItemHashTableInitSize	CommandExecuter.c	16;"	d	file:
+LOG	common.h	3;"	d
+LOG_MSG	HashTable.h	10;"	d
+LOG_MSG	HashTable.h	12;"	d
+Link	Link.h	/^} Link;$/;"	t	typeref:struct:_link
+LinkNode	Link.h	/^} LinkNode;$/;"	t	typeref:struct:_linkNode
+MAX_EVENT_NUMBER	main.c	23;"	d	file:
+MODULE_TEST	Makefile	/^MODULE_TEST = module_test$/;"	m
+O_FILE_LIST	Makefile	/^O_FILE_LIST = $(patsubst %.c, %.o, $(C_FILE_LIST))$/;"	m
+RET_SUCCESS	CommandExecuter.c	17;"	d	file:
+STRLEN	common.h	8;"	d
+SUBSCRIBE_MAP_SIZE	CommandExecuter.h	9;"	d
+SUCCESS	common.h	4;"	d
+Server	Server.h	/^} Server;$/;"	t	typeref:struct:_server
+StackInfo	Exception.h	/^	jmp_buf StackInfo;$/;"	m	struct:tagException
+TEST_SERVER_DEPENDCE	Makefile	/^TEST_SERVER_DEPENDCE = $(patsubst main.debug, $(MODULE_TEST)\/server_test.debug, $(DEBUG_FILE_LIST))$/;"	m
+Throw	Exception.h	29;"	d
+Try	Exception.h	20;"	d
+User	User.h	/^} User;$/;"	t	typeref:struct:_user
+UserData	User.h	/^} UserData;$/;"	t	typeref:struct:_userData
+UserGroup	User.h	/^} UserGroup;$/;"	t	typeref:struct:_userGroup
+_Bucket	HashTable.h	/^typedef struct _Bucket {$/;"	s
+_EXCEPTION_H__	Exception.h	2;"	d
+_HASH_TABLE_H_	HashTable.h	2;"	d
+_HashTable	HashTable.h	/^typedef struct _HashTable {$/;"	s
+__COMMAND_ExECUTER_H__	CommandExecuter.h	2;"	d
+__COMMAND_PARSER_H__	CommandParser.h	2;"	d
+__COMMON_H__	common.h	2;"	d
+__EVENT_H__	Event.h	2;"	d
+__LINK_H__	Link.h	2;"	d
+__SERVER_H__	Server.h	2;"	d
+__USER_H__	User.h	2;"	d
+_commandExecuter	CommandExecuter.h	/^typedef struct _commandExecuter {$/;"	s
+_commandExecuterresult	CommandExecuter.h	/^typedef struct _commandExecuterresult {$/;"	s
+_commandParser	CommandParser.h	/^typedef struct _commandParser {$/;"	s
+_event	Event.h	/^typedef struct _event {$/;"	s
+_link	Link.h	/^typedef struct _link {$/;"	s
+_linkNode	Link.h	/^typedef struct _linkNode {$/;"	s
+_server	Server.h	/^typedef struct _server {$/;"	s
+_user	User.h	/^typedef struct _user {$/;"	s
+_userData	User.h	/^typedef struct _userData {$/;"	s
+_userGroup	User.h	/^typedef struct _userGroup {$/;"	s
+accept_client	main.c	/^void * accept_client(void * context) {$/;"	f
+accept_client_param	main.c	/^typedef struct accept_client_param {$/;"	s	file:
+accept_client_param_t	main.c	/^} accept_client_param_t;$/;"	t	typeref:struct:accept_client_param	file:
+append	Link.h	/^	int (* append)(struct _link *, LinkNode *);$/;"	m	struct:_link
+appendRecv	Server.h	/^	int (* appendRecv)(struct _server *, char *, int);$/;"	m	struct:_server
+bucketDestroy	HashTable.c	/^void bucketDestroy(void * object) {$/;"	f
+buckets	HashTable.h	/^    Bucket ** buckets;$/;"	m	struct:_HashTable
+checkCommand	CommandParser.h	/^	void * (* checkCommand)(void *);$/;"	m	struct:_commandParser
+clientClose	CommandExecuter.h	/^	void (* clientClose)(struct _commandExecuter *);$/;"	m	struct:_commandExecuter
+clientClose	Server.h	/^	void (* clientClose)(struct _server *);$/;"	m	struct:_server
+clientSubscribeMap	CommandExecuter.h	/^	HashTable * clientSubscribeMap;$/;"	m	struct:_commandExecuter
+clientSubsribeMapHandler	CommandExecuter.c	/^void * clientSubsribeMapHandler(void * object) {$/;"	f
+command	CommandParser.h	/^	char * command;$/;"	m	struct:_commandParser
+commandExecuterClientClose	CommandExecuter.c	/^void commandExecuterClientClose(CommandExecuter * executer) {$/;"	f
+commandExecuterDestroy	CommandExecuter.c	/^void commandExecuterDestroy(void * object) {$/;"	f
+commandExecuterReflush	CommandExecuter.c	/^void commandExecuterReflush(CommandExecuter * executer) {$/;"	f
+commandExecuterResultDestroy	CommandExecuter.c	/^void commandExecuterResultDestroy(void * object) {$/;"	f
+commandExecuterResultReflush	CommandExecuter.c	/^void commandExecuterResultReflush(CommandExecuterResult * result) {$/;"	f
+commandExecuterResultSetRet	CommandExecuter.c	/^void commandExecuterResultSetRet(CommandExecuterResult * result, const char * str, unsigned long size) {$/;"	f
+commandExecuterRun	CommandExecuter.c	/^void commandExecuterRun(CommandExecuter * executer) {$/;"	f
+commandHandlerMap	CommandExecuter.c	/^HashTable * commandHandlerMap;$/;"	v
+commandHandlerMap	CommandExecuter.h	/^	HashTable * commandHandlerMap;$/;"	m	struct:_commandExecuter
+commandParserCheckCommand	CommandParser.c	/^void * commandParserCheckCommand(void *object) {$/;"	f
+commandParserDestroy	CommandParser.c	/^void commandParserDestroy(void * object) {$/;"	f
+commandParserReflush	CommandParser.c	/^void commandParserReflush(CommandParser * parser) {$/;"	f
+commandParserRun	CommandParser.c	/^void commandParserRun(CommandParser * parser) {$/;"	f
+commandParserSetRecv	CommandParser.c	/^void commandParserSetRecv(CommandParser *parser, char * recv, int size) {$/;"	f
+dataStorage	CommandExecuter.h	/^	HashTable * dataStorage;$/;"	m	struct:_commandExecuter
+dataStorage	Server.h	/^	HashTable * dataStorage;$/;"	m	struct:_server
+del	Link.h	/^	int (* del)(struct _link *, int);$/;"	m	struct:_link
+delValue	CommandExecuter.c	/^int delValue(CommandExecuter * executer) {$/;"	f
+destroy	CommandExecuter.h	/^	void (* destroy)(void *);$/;"	m	struct:_commandExecuter
+destroy	CommandExecuter.h	/^	void (* destroy)(void *);$/;"	m	struct:_commandExecuterresult
+destroy	CommandParser.h	/^	void (* destroy)(void *);$/;"	m	struct:_commandParser
+destroy	Event.h	/^	void (* destroy)(void *);$/;"	m	struct:_event
+destroy	Exception.h	/^	void (* destroy)(void *);$/;"	m	struct:tagException
+destroy	HashTable.h	/^	void (* destroy)(void *);$/;"	m	struct:_Bucket
+destroy	HashTable.h	/^	void (* destroy)(void *);$/;"	m	struct:_HashTable
+destroy	Link.h	/^	void (* destroy)(void *);$/;"	m	struct:_link
+destroy	Link.h	/^	void (* destroy)(void *);$/;"	m	struct:_linkNode
+destroy	Server.h	/^	void (* destroy)(void *);$/;"	m	struct:_server
+destroy	User.h	/^	void (* destroy)(void *);$/;"	m	struct:_user
+destroy	User.h	/^	void (* destroy)(void *);$/;"	m	struct:_userData
+destroy	User.h	/^	void (* destroy)(void *);$/;"	m	struct:_userGroup
+destroyValue	HashTable.h	/^	void (* destroyValue)(void *);$/;"	m	struct:_Bucket
+destroyValue	Link.h	/^	void (* destroyValue)(void *);$/;"	m	struct:_linkNode
+element_num	HashTable.h	/^    int element_num;$/;"	m	struct:_HashTable
+epfd	main.c	/^	int epfd;$/;"	m	struct:accept_client_param	file:
+event	CommandExecuter.h	/^	Event * event;$/;"	m	struct:_commandExecuter
+event	CommandParser.h	/^	Event * event;$/;"	m	struct:_commandParser
+event	Server.h	/^	Event *event;$/;"	m	struct:_server
+eventDestroy	Event.c	/^void eventDestroy(void * object) {$/;"	f
+event_list	Event.h	/^	HashTable * event_list;$/;"	m	struct:_event
+exception	CommandExecuter.h	/^	ExcepSign * exception;$/;"	m	struct:_commandExecuter
+exception	CommandParser.h	/^	ExcepSign * exception;$/;"	m	struct:_commandParser
+exception	Server.h	/^	ExcepSign * exception;$/;"	m	struct:_server
+exceptionDestroy	Exception.c	/^void exceptionDestroy(void *object) {$/;"	f
+executeLogin	CommandExecuter.c	/^int executeLogin(CommandExecuter * executer) {$/;"	f
+executePublish	CommandExecuter.c	/^int executePublish(CommandExecuter * executer) {$/;"	f
+executeSubscribe	CommandExecuter.c	/^int executeSubscribe(CommandExecuter * executer) {$/;"	f
+executer	Server.h	/^	CommandExecuter * executer;$/;"	m	struct:_server
+fd	CommandExecuter.h	/^	int fd;$/;"	m	struct:_commandExecuter
+fd	Server.h	/^	int fd;$/;"	m	struct:_server
+getSubscribedList	CommandExecuter.c	/^void ** getSubscribedList(Link * link) {$/;"	f
+getSubscribedQues	CommandExecuter.c	/^void ** getSubscribedQues(Link *link) {$/;"	f
+getValue	CommandExecuter.c	/^int getValue(CommandExecuter * executer) {$/;"	f
+group	User.h	/^	UserGroup * group;$/;"	m	struct:_userData
+hashDestroy	HashTable.c	/^void hashDestroy(void * object) {$/;"	f
+hashInsert	HashTable.c	/^int hashInsert(HashTable *ht, Bucket * bucket) {$/;"	f
+hashLookup	HashTable.c	/^int hashLookup(HashTable *ht, const char *key, Bucket ** result) {$/;"	f
+hashRemove	HashTable.c	/^int hashRemove(HashTable * ht, const char * key) {$/;"	f
+hash_resize	HashTable.c	/^static int hash_resize(HashTable *ht) {$/;"	f	file:
+hash_str	HashTable.c	/^static int hash_str(const char *key) {$/;"	f	file:
+hashmapDelValue	CommandExecuter.c	/^int hashmapDelValue(CommandExecuter * executer) {$/;"	f
+hashmapGetValue	CommandExecuter.c	/^int hashmapGetValue(CommandExecuter *executer) {$/;"	f
+hashmapSetValue	CommandExecuter.c	/^int hashmapSetValue(CommandExecuter * executer) {$/;"	f
+head	Link.h	/^	LinkNode * head;$/;"	m	struct:_link
+initBucket	HashTable.c	/^Bucket * initBucket(const char * key, void * value, unsigned long valueSize, int valueType, void (* destroyValue)(void *)) {$/;"	f
+initCommandExecuter	CommandExecuter.c	/^CommandExecuter * initCommandExecuter(HashTable * dataStorage, HashTable * userTable, HashTable * userClientMap, ExcepSign * exception) {$/;"	f
+initCommandExecuterResult	CommandExecuter.c	/^CommandExecuterResult * initCommandExecuterResult() {$/;"	f
+initCommandHandlerMap	CommandExecuter.c	/^int initCommandHandlerMap() {$/;"	f
+initCommandParser	CommandParser.c	/^CommandParser * initCommandParser(ExcepSign * exception) {$/;"	f
+initEvent	Event.c	/^Event * initEvent() {$/;"	f
+initException	Exception.c	/^ExcepSign * initException() {$/;"	f
+initHash	HashTable.c	/^HashTable * initHash() {$/;"	f
+initHashWithSize	HashTable.c	/^HashTable * initHashWithSize(int size) {$/;"	f
+initLink	Link.c	/^Link * initLink() {$/;"	f
+initLinkNode	Link.c	/^LinkNode * initLinkNode(void * value, unsigned long valueSize, int valueType, void (* destroyValue)(void *)) {$/;"	f
+initServer	Server.c	/^Server * initServer(HashTable * dataStorage) {$/;"	f
+initUser	User.c	/^User * initUser(const char * username, int username_len, const char * password, int password_len) {$/;"	f
+initUserData	User.c	/^UserData * initUserData(const char * username, int username_len, const char * password, int password_len, UserGroup * group) {$/;"	f
+initUserGroup	User.c	/^UserGroup * initUserGroup(const char * name, int name_len) {$/;"	f
+insert	HashTable.h	/^	int (* insert)(struct _HashTable *, Bucket *);$/;"	m	struct:_HashTable
+key	HashTable.h	/^    char * key;$/;"	m	struct:_Bucket
+keySize	HashTable.h	/^	int keySize;$/;"	m	struct:_Bucket
+linkAppend	Link.c	/^int linkAppend(Link * link, LinkNode * node) {$/;"	f
+linkDel	Link.c	/^int linkDel(Link * link, int index) {$/;"	f
+linkDestroy	Link.c	/^void linkDestroy(void * object) {$/;"	f
+linkNodeDestroy	Link.c	/^void linkNodeDestroy(void * object) {$/;"	f
+listDelValue	CommandExecuter.c	/^int listDelValue(CommandExecuter * executer) {$/;"	f
+listLen	CommandExecuter.c	/^int listLen(CommandExecuter * executer) {$/;"	f
+listPushValue	CommandExecuter.c	/^int listPushValue(CommandExecuter * executer) {$/;"	f
+listRangeValue	CommandExecuter.c	/^int listRangeValue(CommandExecuter * executer) {$/;"	f
+listValue	CommandExecuter.c	/^int listValue(CommandExecuter * executer) {$/;"	f
+login	User.h	/^	int (* login)(struct _user *);$/;"	m	struct:_user
+lookup	HashTable.h	/^	int (* lookup)(struct _HashTable *, const char *, Bucket **);$/;"	m	struct:_HashTable
+main	main.c	/^int main() {$/;"	f
+main	module_test/calloc_test.c	/^int main () {$/;"	f
+main	module_test/event_test.c	/^int main() {$/;"	f
+main	module_test/free.c	/^int main () {$/;"	f
+main	module_test/free_char_array.c	/^int main () {$/;"	f
+main	module_test/link_test.c	/^int main() {$/;"	f
+main	module_test/memcpy.c	/^int main() {$/;"	f
+main	module_test/server_test.c	/^int main(int argc, char ** argv) {$/;"	f
+main	module_test/void_to_char.c	/^int main() {$/;"	f
+message	Exception.h	/^	char * message;$/;"	m	struct:tagException
+name	User.h	/^	char * name;$/;"	m	struct:_userGroup
+name_len	User.h	/^	int name_len;$/;"	m	struct:_userGroup
+next	HashTable.h	/^    struct _Bucket * next;$/;"	m	struct:_Bucket	typeref:struct:_Bucket::_Bucket
+next	Link.h	/^	struct _linkNode * next;$/;"	m	struct:_linkNode	typeref:struct:_linkNode::_linkNode
+off	Event.c	/^void * off(Event * event, const char *str) {$/;"	f
+off	Event.h	/^	void * (* off)(struct _event *, const char *);$/;"	m	struct:_event
+on	Event.c	/^void * on(Event * event, const char * str, void * (* handler)(void *)) {$/;"	f
+on	Event.h	/^	void * (* on)(struct _event *, const char *, void * (* handler)(void *));$/;"	m	struct:_event
+params	CommandParser.h	/^	char ** params;$/;"	m	struct:_commandParser
+paramsSize	CommandParser.h	/^	int paramsSize;$/;"	m	struct:_commandParser
+parser	CommandExecuter.h	/^	CommandParser * parser;$/;"	m	struct:_commandExecuter
+password	User.h	/^	char * password;$/;"	m	struct:_user
+password	User.h	/^	char * password;$/;"	m	struct:_userData
+password_len	User.h	/^	int password_len;$/;"	m	struct:_user
+password_len	User.h	/^	int password_len;$/;"	m	struct:_userData
+print_str	module_test/event_test.c	/^void * print_str(void * str) {$/;"	f
+print_str_1	module_test/event_test.c	/^void * print_str_1(void * str) {$/;"	f
+printfIntLink	module_test/link_test.c	/^void ** printfIntLink(Link *link) {$/;"	f
+recv	CommandParser.h	/^	char * recv;$/;"	m	struct:_commandParser
+recv	Server.h	/^	char * recv;$/;"	m	struct:_server
+recvSize	CommandParser.h	/^	int recvSize;$/;"	m	struct:_commandParser
+recvSize	Server.h	/^	int recvSize;$/;"	m	struct:_server
+reflush	CommandExecuter.h	/^	void (* reflush)(struct _commandExecuter *);$/;"	m	struct:_commandExecuter
+reflush	CommandExecuter.h	/^	void (* reflush)(struct _commandExecuterresult *);$/;"	m	struct:_commandExecuterresult
+reflush	CommandParser.h	/^	void (* reflush)(struct _commandParser *);$/;"	m	struct:_commandParser
+reflush	Server.h	/^	void (* reflush)(struct _server *);$/;"	m	struct:_server
+remove	HashTable.h	/^	int (* remove)(struct _HashTable *, const char *);$/;"	m	struct:_HashTable
+removeTail	CommandParser.c	/^void removeTail(CommandParser * parser) {$/;"	f
+resize_hash_table_if_needed	HashTable.c	/^static void resize_hash_table_if_needed(HashTable *ht) {$/;"	f	file:
+result	CommandExecuter.h	/^	CommandExecuterResult * result;$/;"	m	struct:_commandExecuter
+ret	CommandExecuter.h	/^	char * ret;$/;"	m	struct:_commandExecuterresult
+retSize	CommandExecuter.h	/^	unsigned long int retSize;$/;"	m	struct:_commandExecuterresult
+run	CommandExecuter.h	/^	void (* run)(struct _commandExecuter *);$/;"	m	struct:_commandExecuter
+run	CommandParser.h	/^	void (* run)(struct _commandParser *);$/;"	m	struct:_commandParser
+run	Server.c	/^char * run(Server* server) { CommandExecuter * executer = server->executer;$/;"	f
+run	Server.h	/^	char * (* run)(struct _server *);$/;"	m	struct:_server
+serverAppendRecv	Server.c	/^int serverAppendRecv(Server * server, char *str, int size) {$/;"	f
+serverCheckUser	Server.c	/^void * serverCheckUser(void * object) {$/;"	f
+serverClientClose	Server.c	/^void serverClientClose(Server * server) {$/;"	f
+serverDestroy	Server.c	/^void serverDestroy(void *object) {$/;"	f
+serverInitUserTable	Server.c	/^HashTable * serverInitUserTable(Server * server) {$/;"	f
+serverRefulsh	Server.c	/^void serverRefulsh(Server * server) {$/;"	f
+server_fd	main.c	/^	int server_fd;$/;"	m	struct:accept_client_param	file:
+setRecv	CommandParser.h	/^	void (* setRecv)(struct _commandParser *, char *, int);$/;"	m	struct:_commandParser
+setRet	CommandExecuter.h	/^	void (* setRet)(struct _commandExecuterresult *, const char *, unsigned long);$/;"	m	struct:_commandExecuterresult
+setValue	CommandExecuter.c	/^int setValue(CommandExecuter * executer) {$/;"	f
+set_nonblocking	main.c	18;"	d	file:
+size	HashTable.h	/^    int size;$/;"	m	struct:_HashTable
+size	Link.h	/^	int size;$/;"	m	struct:_link
+subscribeClientMap	CommandExecuter.h	/^	HashTable * subscribeClientMap;$/;"	m	struct:_commandExecuter
+tagException	Exception.h	/^typedef struct tagException {$/;"	s
+traversal	Link.h	/^	void ** (* traversal)(struct _link *);$/;"	m	struct:_link
+trigger	Event.c	/^void * trigger(Event * event, const char * str, void * params) {$/;"	f
+trigger	Event.h	/^	void * (* trigger)(struct _event *, const char *, void *);$/;"	m	struct:_event
+userClientMap	CommandExecuter.h	/^	HashTable * userClientMap;$/;"	m	struct:_commandExecuter
+userClientMap	Server.h	/^	HashTable * userClientMap;$/;"	m	struct:_server
+userDataDestroy	User.c	/^void userDataDestroy(void * object) {$/;"	f
+userDestroy	User.c	/^void userDestroy(void * object) {$/;"	f
+userGroupDestroy	User.c	/^void userGroupDestroy(void * object) {$/;"	f
+userLogin	User.c	/^int userLogin(User * user) {$/;"	f
+userTable	CommandExecuter.h	/^	HashTable * userTable;$/;"	m	struct:_commandExecuter
+userTable	Server.h	/^	HashTable * userTable;$/;"	m	struct:_server
+username	User.h	/^	char * username;$/;"	m	struct:_user
+username	User.h	/^	char * username;$/;"	m	struct:_userData
+username_len	User.h	/^	int username_len;$/;"	m	struct:_user
+username_len	User.h	/^	int username_len;$/;"	m	struct:_userData
+value	HashTable.h	/^    void * value;$/;"	m	struct:_Bucket
+value	Link.h	/^	void * value;$/;"	m	struct:_linkNode
+valueSize	HashTable.h	/^	unsigned long valueSize;$/;"	m	struct:_Bucket
+valueSize	Link.h	/^	unsigned long valueSize;$/;"	m	struct:_linkNode
+valueType	HashTable.h	/^	int valueType;$/;"	m	struct:_Bucket
+valueType	Link.h	/^	int valueType;$/;"	m	struct:_linkNode
+waitingCheckCommand	CommandParser.h	/^	char * waitingCheckCommand;$/;"	m	struct:_commandParser

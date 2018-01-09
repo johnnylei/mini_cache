@@ -22,14 +22,17 @@ typedef struct _commandExecuter {
 	HashTable * commandHandlerMap;
 	HashTable * userTable;
 	HashTable * userClientMap;
-	HashTable * subscribeMap;
-	Link * subscribedLink;
+	// key:queue value:clientfd
+	HashTable * subscribeClientMap;
+	// key:clientfd value:queue
+	HashTable * clientSubscribeMap;
 	CommandParser * parser;
 	Event * event;
 	CommandExecuterResult * result;
 	void (* run)(struct _commandExecuter *);
 	void (* destroy)(void *);
 	void (* reflush)(struct _commandExecuter *);
+	void (* clientClose)(struct _commandExecuter *);
 } CommandExecuter;
 
 CommandExecuter * initCommandExecuter(HashTable * dataStorage, HashTable * userTable, HashTable * userClientMap, ExcepSign * exception);
