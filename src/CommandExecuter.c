@@ -529,6 +529,9 @@ int executePublish(CommandExecuter * executer) {
 	}
 
 	Link * link = (Link *)result->value;
+	if (link->size < 1) {
+		return FAILED;
+	}
 	link->traversal = getSubscribedList;
 	int ** subscribedList = (int **)link->traversal(link);
 	int i;
