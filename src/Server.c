@@ -24,7 +24,15 @@ char * run(Server* server) { CommandExecuter * executer = server->executer;
 
 		executer->fd = server->fd;
 		executer->run(executer);
-		server->event->trigger(server->event, AfterRun, (void *)server); } CatchElse (server->exception) { server->reflush(server);
+		server->event->trigger(server->event, AfterRun, (void *)server); 
+	} CatchElse (server->exception) {
+		server->reflush(server);
+		char * tmp = (char *)malloc(EXCEPTION_MESSAGE_SIZE);
+		bzero(tmp, EXCEPTION_MESSAGE_SIZE);
+		sprintf(tmp, "%s:%s", ERROR, server->exception->message);
+
+		free(server->exception->message);
+		server->exception->message = tmp;
 		return server->exception->message;
 	}
 

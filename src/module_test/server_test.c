@@ -10,7 +10,7 @@ int main(int argc, char ** argv) {
 
 	Server * server = initServer(dataStorage);
 	server->fd = 1;
-	strcpy(str, "login admin admin@minicache@123");
+	strcpy(str, "login admin admin@sminicache@123");
 	server->appendRecv(server, str, strlen(str) + 1);
 	char * ret = server->run(server);
 	printf("%s\n", ret);

@@ -89,7 +89,12 @@ subsribe que1
 publish que1 xxxx
 ```
 
+## php extension
+based on php7
+```
+https://github.com/johnnylei/php_mini_cache.git
+```
+
 ## next to do
 - 权限控制
 - log
-- 实现php扩展客户端(php extension client)
