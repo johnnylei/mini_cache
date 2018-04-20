@@ -6,6 +6,7 @@
 #include "common.h"
 #include "Link.h"
 
+
 static int hash_resize(HashTable *ht) {
 	// double the size
 	int org_size = ht->size;

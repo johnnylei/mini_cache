@@ -14,7 +14,6 @@
 #include "Server.h"
 #include "HashTable.h"
 
-
 #define set_nonblocking(fd) do { \
 	int option = fcntl(fd, F_GETFL); \
 	fcntl(fd, F_SETFL, option | O_NONBLOCK); \

@@ -95,6 +95,11 @@ based on php7
 https://github.com/johnnylei/php_mini_cache.git
 ```
 
+## fixed 20180420
+- add hashtable resize 
+- remove child process worker(because cannot share memory in mutil processes)
+
 ## next to do
 - 权限控制
 - log
+- 持久化
